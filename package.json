@@ -1,0 +1,22 @@
+{
+  "name": "ingage-chatbot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ingage EduTech website with a chatbot that uses predefined Q&A first and a live AI API for everything else",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server/dev-server.mjs",
+    "dev": "node server/dev-server.mjs --mock",
+    "test": "node --test --test-force-exit tests/*.test.mjs",
+    "build": "node scripts/build.mjs",
+    "deploy:fn": "supabase functions deploy chat --no-verify-jwt",
+    "check-ai": "node scripts/check-ai.mjs",
+    "secrets:fn": "supabase secrets set --env-file .env"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3"
+  }
+}

@@ -1,0 +1,5 @@
+# Supabase CLI settings for this project (run `supabase link --project-ref YOUR_REF` first)
+[functions.chat]
+# The website may call this with a publishable key, so JWT checks are off;
+# the function protects itself with ALLOWED_ORIGINS and a per-IP rate limit.
+verify_jwt = false

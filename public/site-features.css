@@ -1,0 +1,219 @@
+/* ingage – syllabus, internship page and floating chatbot styles */
+
+/* ---------- syllabus ---------- */
+.syl{margin-top:26px;scroll-margin-top:90px}
+.syl-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.syl-h h3{margin:0;font-size:22px}
+.syl-sum{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}
+.syl-sum span{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;background:rgba(141,198,63,.14);color:#3f6b12}
+.syl-mods{display:flex;flex-direction:column;gap:8px}
+.syl-m{flex-shrink:0;border:1px solid rgba(15,31,61,.12);border-radius:14px;background:#fff;overflow:hidden}
+.syl-m>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:13px 16px;font-weight:700}
+.syl-m>summary::-webkit-details-marker{display:none}
+.syl-m>summary .n{flex:0 0 30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#0f1f3d;color:#fff;font-size:13px}
+.syl-m>summary .t{flex:1;min-width:0}
+.syl-m>summary .c{font-size:12px;font-weight:600;color:#5b6b85;white-space:nowrap}
+.syl-m>summary::after{content:'+';font-size:20px;color:#6fa12e;font-weight:800;margin-left:4px}
+.syl-m[open]>summary::after{content:'–'}
+.syl-m ol{margin:0;padding:0 16px 14px 58px;display:flex;flex-direction:column;gap:7px}
+.syl-m li{font-size:14px;line-height:1.45}
+.syl-m li small{display:block;color:#5b6b85;font-size:12px}
+.syl-acts{display:flex;gap:8px;flex-wrap:wrap}
+.syl-btn{border:1px solid rgba(15,31,61,.18);background:#fff;border-radius:10px;padding:8px 12px;font:700 13px Inter,sans-serif;cursor:pointer;color:#0f1f3d}
+.syl-btn:hover{border-color:#6fa12e}
+.syl-req{font-size:13.5px;margin:6px 0 0}
+.syl-link{display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0 0;padding:10px;border-radius:12px;border:1px dashed #6fa12e;color:#3f6b12;font-weight:700;font-size:14px;cursor:pointer;background:rgba(141,198,63,.08)}
+.syl-gate h2{margin:0 0 4px}
+.syl-gate .syl-mods{max-height:46vh;overflow:auto;padding-right:4px}
+.syl-gate .syl-go{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.ip-card{margin-top:14px}
+.ip-card a{cursor:pointer}
+
+/* ---------- internship page ---------- */
+#internship .ip-hero{border-radius:24px;padding:38px 32px;background:linear-gradient(135deg,#0f1f3d,#1d3b6b);color:#fff;position:relative;overflow:hidden}
+#internship .ip-hero h1{color:#fff;margin:10px 0 10px;font-size:clamp(28px,4vw,42px);line-height:1.15}
+#internship .ip-hero p{color:#d6e0f0;max-width:720px;font-size:16.5px;line-height:1.6;margin:0}
+#internship .ip-hero .gb{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#b8e07c}
+#internship .ip-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+#internship .ip-cta .btn{cursor:pointer}
+#internship .ip-ghost{background:transparent!important;border:1px solid rgba(255,255,255,.45)!important;color:#fff!important}
+#internship .ip-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0 0}
+#internship .ip-fact{background:#fff;border:1px solid rgba(15,31,61,.1);border-radius:16px;padding:16px}
+#internship .ip-fact b{display:block;font-size:13px;color:#5b6b85;font-weight:700;margin-bottom:4px}
+#internship .ip-fact span{font-size:17px;font-weight:800;color:#0f1f3d}
+#internship h2{margin-top:42px}
+#internship .ip-steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:0;list-style:none}
+#internship .ip-steps li{counter-increment:s;background:#fff;border:1px solid rgba(15,31,61,.1);border-radius:16px;padding:16px 16px 16px 58px;position:relative;font-size:14.5px;line-height:1.5}
+#internship .ip-steps li::before{content:counter(s);position:absolute;left:16px;top:16px;width:30px;height:30px;border-radius:50%;background:#8dc63f;color:#0a1224;font-weight:800;display:grid;place-items:center}
+#internship .ip-steps li b{display:block;margin-bottom:2px}
+#internship .ip-tbl{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;border:1px solid rgba(15,31,61,.1);font-size:14px}
+#internship .ip-tbl th,#internship .ip-tbl td{text-align:left;padding:11px 14px;border-bottom:1px solid rgba(15,31,61,.08);vertical-align:top}
+#internship .ip-tbl th{background:#f3f7ee;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:#3f6b12}
+#internship .ip-role{display:flex;flex-direction:column;gap:6px}
+#internship .ip-role .pill{align-self:flex-start}
+#internship .ip-status{border:2px solid #8dc63f;background:#f6fbef}
+#internship .ip-faq details{background:#fff;border:1px solid rgba(15,31,61,.1);border-radius:14px;padding:14px 16px;margin-bottom:8px}
+#internship .ip-faq summary{cursor:pointer;font-weight:700}
+#internship .ip-faq p{margin:8px 0 0;line-height:1.55;color:#33435f}
+#internship .ip-note{font-size:12.5px;color:#5b6b85;margin-top:8px}
+@media(max-width:860px){#internship .ip-facts{grid-template-columns:repeat(2,minmax(0,1fr))}#internship .ip-steps{grid-template-columns:1fr}#internship .ip-hero{padding:28px 20px}}
+
+/* ---------- floating chatbot ---------- */
+.aiw{z-index:70}                                   /* above page overlays so help is reachable everywhere */
+.ai-teaser{position:absolute;right:0;bottom:calc(100% + 12px);width:250px;background:#fff;color:#0f1f3d;border-radius:16px;padding:13px 34px 13px 14px;font:500 13.5px/1.45 Inter,sans-serif;box-shadow:0 18px 40px -14px rgba(15,31,61,.45),0 0 0 1px rgba(15,31,61,.08);cursor:pointer;animation:aiTz .3s ease-out}
+.ai-teaser b{display:block;margin-bottom:2px}
+.ai-teaser::after{content:'';position:absolute;right:26px;bottom:-7px;width:14px;height:14px;background:#fff;transform:rotate(45deg);box-shadow:3px 3px 6px -3px rgba(15,31,61,.2)}
+.ai-teaser button{position:absolute;top:6px;right:6px;border:0;background:none;font-size:18px;line-height:1;cursor:pointer;color:#5b6b85;padding:4px}
+@keyframes aiTz{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+body.ai-open .ai-teaser{display:none}
+.ai-fab .ai-ndot{position:absolute;top:-2px;right:-2px;width:12px;height:12px;border-radius:50%;background:#ff5a5f;border:2px solid #fff;display:none}
+body.ai-unseen .ai-fab .ai-ndot{display:block}
+.ai-fab{position:relative}
+/* compact round button on phones, and while a dialog (login, checkout) is open */
+@media(max-width:560px){
+  .ai-fab{width:58px;height:58px;padding:0;justify-content:center;border-radius:50%}
+  .ai-fab span{display:none}
+  .ai-fab svg{width:26px;height:26px}
+  .ai-teaser{width:min(250px,calc(100vw - 40px))}
+}
+body.has-ov .ai-fab{width:52px;height:52px;padding:0;justify-content:center;border-radius:50%}
+body.has-ov .ai-fab span,body.has-ov .ai-teaser{display:none}
+
+@media print{
+  body.syl-print>*:not(.syl-printable){display:none!important}
+  .syl-printable .syl-m ol{display:flex!important}
+}
+#internship .btn{width:auto;display:inline-flex;align-items:center;justify-content:center}
+#internship .ip-tbl{table-layout:fixed}
+#internship .ip-tbl td{white-space:normal;overflow-wrap:anywhere}
+#internship .ip-tracks th:nth-child(1){width:34%}#internship .ip-tracks th:nth-child(2){width:38%}
+@media(max-width:640px){#internship .ip-tracks th:nth-child(3),#internship .ip-tracks td:nth-child(3){display:none}#internship .ip-tracks th:nth-child(1){width:46%}#internship .ip-tracks th:nth-child(2){width:54%}#internship .ip-cta .btn{flex:1 1 100%}}
+/* review dialog: keep "Continue to enroll" visible while scrolling the syllabus */
+.syl-gate .syl-go{position:sticky;bottom:-34px;background:inherit;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 22%);padding:22px 0 14px;margin-bottom:-14px;z-index:2}
+@media(max-width:560px){
+  .syl-gate .syl-go{bottom:-26px}
+  .syl-gate .syl-go .btn{width:100%;font-size:15px}
+  .syl-gate .syl-lg{display:none}
+  .syl-gate .syl-mods{max-height:none}
+  .ai-teaser{display:none}               /* phones: only the red dot, no bubble over the content */
+}
+/* My Learning tabs fit on phones */
+@media(max-width:560px){.utb button{padding:12px 10px;font-size:13.5px}}
+/* course page: keep the Enroll card in view while reading the syllabus (desktop) */
+@media(min-width:821px){#cv>.two>div:last-child{position:sticky;top:92px}}
+.syl-link+label{margin-top:12px}
+/* 30-sec demo on phones: taller frame so the play button doesn't cover the title */
+@media(max-width:560px){.xd{aspect-ratio:4/3}.xd .sc{padding:16px 16px 74px}.xd .sc>div:first-child{font-size:40px!important}}
+
+/* ---------- course page sections ---------- */
+.cx-left{min-width:0}
+.cx-nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:18px 0 4px;padding:4px 0;position:sticky;top:70px;z-index:5;background:var(--bg,#f3f6fb)}
+.cx-nav::-webkit-scrollbar{display:none}
+.cx-nav a{flex:0 0 auto;cursor:pointer;font-size:13px;font-weight:700;padding:7px 12px;border-radius:999px;border:1px solid rgba(15,31,61,.14);background:#fff;color:#0f1f3d;text-decoration:none}
+.cx-nav a:hover{border-color:#6fa12e;color:#3f6b12}
+.cx-sec,.syl{margin-top:30px;scroll-margin-top:130px}
+.cx-sec h3,.syl-h h3{margin:0 0 4px;font-size:22px}
+.cx-sub{margin:0 0 12px;color:#5b6b85;font-size:14.5px}
+.cx-h{display:block;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:#3f6b12;margin:0 0 8px}
+.cx-grid3{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;align-items:stretch}
+.cx-grid3>div{background:#fff;border:1px solid rgba(15,31,61,.1);border-radius:14px;padding:14px 16px;min-width:0}
+.cx-chips{display:flex;flex-wrap:wrap;gap:6px}
+.cx-chips span{font-size:13px;font-weight:600;padding:5px 10px;border-radius:8px;background:#eef3fa;color:#0f1f3d}
+.cx-chips.tech span{background:rgba(141,198,63,.15);color:#2f5409}
+.cx-topics{margin:0;padding-left:20px;columns:2;column-gap:28px;font-size:14px;line-height:1.7}
+.cx-why{font-size:15.5px;line-height:1.65;margin:4px 0 14px}
+.cx-2{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+.cx-box{background:#fff;border:1px solid rgba(15,31,61,.1);border-radius:14px;padding:14px 16px;min-width:0}
+.cx-box .ck{margin:0}
+.cx-out{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cx-out>div{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid rgba(15,31,61,.1);border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.45}
+.cx-out span{flex:0 0 24px;height:24px;border-radius:50%;background:#8dc63f;color:#0a1224;font-weight:800;font-size:12.5px;display:grid;place-items:center}
+.cx-roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.cx-roles>div{background:#fff;border:1px solid rgba(15,31,61,.1);border-left:4px solid #8dc63f;border-radius:12px;padding:12px 14px}
+.cx-roles b{display:block;font-size:14.5px}
+.cx-roles small{color:#5b6b85;font-size:12.5px}
+.cx-note{font-size:12.5px;color:#5b6b85;margin:10px 0}
+.cx-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.cx-stats>div{background:linear-gradient(135deg,#0f1f3d,#1d3b6b);color:#fff;border-radius:14px;padding:14px;text-align:center}
+.cx-stats b{display:block;font-size:22px;color:#b8e07c}
+.cx-stats span{font-size:12px;color:#d6e0f0}
+.cx-pts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cx-pts>div{background:#fff;border:1px solid rgba(15,31,61,.1);border-radius:14px;padding:12px 14px;font-size:13.5px;line-height:1.45}
+.cx-pts i{font-style:normal;font-size:20px;display:block}
+.cx-pts b{display:block;margin:2px 0}
+.cx-pts span{color:#5b6b85}
+@media(max-width:1100px){.cx-pts{grid-template-columns:1fr 1fr}.cx-stats{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.cx-grid3,.cx-2,.cx-out,.cx-pts{grid-template-columns:1fr}.cx-topics{columns:1}.cx-nav{top:62px}.cx-sec h3,.syl-h h3{font-size:20px}}
+
+/* ---------- progress, milestones, recommendations ---------- */
+.pg-card{background:#fff;border:1px solid rgba(15,31,61,.1);border-radius:18px;padding:18px 20px;margin:0 0 18px}
+.pg-top{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.pg-ring{--p:0;width:86px;height:86px;border-radius:50%;background:conic-gradient(#8dc63f calc(var(--p)*1%),#e6ecf4 0);display:grid;place-items:center;flex:0 0 86px}
+.pg-ring b{width:66px;height:66px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:19px;font-weight:800;color:#0f1f3d}
+.pg-main{flex:1;min-width:220px}
+.pg-main h4{margin:0 0 2px;font-size:17px}
+.pg-bar{position:relative;height:12px;border-radius:999px;background:#e6ecf4;margin:22px 0 26px}
+.pg-bar>i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#8dc63f,#6fa12e)}
+.pg-ms{position:absolute;top:-22px;transform:translateX(-50%);font-size:11px;font-weight:800;color:#5b6b85;white-space:nowrap}
+.pg-ms::after{content:'';position:absolute;left:50%;top:18px;width:2px;height:16px;background:#c4cfdf;transform:translateX(-50%)}
+.pg-ms.hit{color:#3f6b12}.pg-ms.hit::after{background:#3f6b12}
+.pg-ms:last-child{transform:translateX(-100%)}
+.pg-badges{display:flex;gap:6px;flex-wrap:wrap}
+.pg-badges span{font-size:12px;font-weight:700;padding:5px 9px;border-radius:999px;background:#eef3fa;color:#8090a8}
+.pg-badges span.hit{background:rgba(141,198,63,.18);color:#2f5409}
+.rec{margin-top:16px;border-top:1px solid rgba(15,31,61,.08);padding-top:14px}
+.rec h5{margin:0 0 8px;font-size:15px}
+.rec-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.rec-list>div{border:1px solid rgba(15,31,61,.12);border-radius:12px;padding:10px 12px;font-size:13.5px}
+.rec-list>div.hit{border-color:#8dc63f;background:#f6fbef}
+.rec-list b{display:block}
+.rec-list small{color:#5b6b85}
+.rec-next{font-size:13.5px;color:#33435f;margin:10px 0 0}
+.pg-mini{margin:4px 0 12px}
+.pg-mini .pg-bar{margin:8px 0 4px;height:9px}
+.pg-mini small{color:#5b6b85}
+.ms-toast{position:fixed;left:50%;top:84px;transform:translate(-50%,-20px);opacity:0;z-index:80;width:min(420px,calc(100vw - 24px));background:#0f1f3d;color:#fff;border-radius:18px;padding:16px 46px 16px 18px;box-shadow:0 24px 60px -18px rgba(15,31,61,.6);transition:opacity .3s,transform .3s;font:500 14px/1.45 Inter,sans-serif}
+.ms-toast.on{opacity:1;transform:translate(-50%,0)}
+.ms-toast b{display:block;font-size:17px;margin-bottom:2px;color:#b8e07c}
+.ms-toast a{color:#b8e07c;font-weight:700;cursor:pointer;text-decoration:underline}
+.ms-toast button{position:absolute;right:10px;top:10px;border:0;background:none;color:#d6e0f0;font-size:20px;cursor:pointer}
+.ms-toast .ms-big{font-size:34px;float:left;margin:0 12px 0 0;line-height:1}
+.cx-2{align-items:start}
+.ms-toast strong{color:#b8e07c;font-weight:700}
+/* sticky section menu: solid background so page text never shows through */
+.cx-nav{background:var(--bg,#f4f7fb);box-shadow:0 10px 12px -12px rgba(15,31,61,.35);margin-left:-4px;margin-right:-4px;padding:6px 4px}
+
+/* ---------- Google Drive players (My Learning) ---------- */
+.dv iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:14px;background:#0f1f3d}
+.dvb{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0 0}
+.dvn{margin:8px 0 0;font-size:13px}
+
+/* ---------- alignment fixes ---------- */
+/* tick icons centred on the first line of text at any font size */
+.ck li:before{top:calc(6px + .8em - 9.5px)}
+.cx-h{margin-top:0}
+.cx-grid3 .cx-chips+.cx-h{display:block}
+/* section menu: wraps on desktop (no cut-off buttons), scrolls on phones */
+@media(min-width:821px){.cx-nav{flex-wrap:wrap;overflow:visible}}
+/* small progress bar on the course page: room for the % labels */
+.pg-mini{margin:8px 0 14px}
+.pg-mini>b{display:block}
+.pg-mini .pg-bar{margin:30px 0 6px}
+/* Home page sections line up with the header and the other pages (they used 20px side padding) */
+#landing .w{padding-left:24px!important;padding-right:24px!important}
+@media(max-width:700px){#landing .w{padding-left:18px!important;padding-right:18px!important}}
+/* Topics card: one readable column; equal-height Industry boxes; stat labels */
+.cx-topics{columns:1!important}
+.cx-2{align-items:stretch!important}
+.cx-stats span{display:block;line-height:1.35;margin-top:4px}
+/* My Learning lines up with the header like every other page */
+#learn .w{max-width:1200px}
+/* short pages: keep the footer at the bottom of the screen */
+section.v.on{min-height:calc(100vh - 140px)}
+/* footer text is never hidden under the floating chat button */
+footer{padding-bottom:64px}
+@media(max-width:560px){footer{padding-bottom:84px}}
+/* section menu: one compact row */
+.cx-nav a{font-size:12.5px;padding:6px 11px}
+/* phones: section menu wraps (nothing cut off) and scrolls away with the page */
+@media(max-width:820px){.cx-nav{flex-wrap:wrap;overflow:visible;position:static;box-shadow:none;margin-left:0;margin-right:0;padding:4px 0}.cx-nav a{font-size:12px;padding:5px 10px}}
