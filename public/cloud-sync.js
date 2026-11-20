@@ -129,23 +129,48 @@
   }
 
   /* ---------- staff (mentor / admin) ---------- */
+  // With Supabase on, staff sign in with their own account, which must have a row in public.staff.
+  function staffSignIn(v, p, btn) {
+    v = String(v || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { w.err('Please enter your staff email.'); return; }
+    if (!p) { w.err('Please enter your password.'); return; }
+    w.authBusy(btn, 1, 'Checking…');
+    C.staffing = 1;
+    cli(function (c) {
+      c.auth.signInWithPassword({ email: v, password: p }).then(function (r) {
+        if (r.error) {
+          C.staffing = 0; w.authBusy(btn, 0);
+          w.err(/confirm/i.test(r.error.message) ? 'Please confirm your email first, then sign in.' : 'Incorrect staff email or password.');
+          return;
+        }
+        c.rpc('is_staff').then(function (s) {
+          C.staffing = 0; w.authBusy(btn, 0);
+          if (s.data === true) { C.staff = true; C.uid = r.data.user.id; w.EM = v; w.go({ email: v, name: 'Admin', role: 'a' }); }
+          else { c.auth.signOut(); w.err('This account is not set up as ingage staff yet. Ask the site owner to add it.'); }
+        });
+      }).catch(function () { C.staffing = 0; w.authBusy(btn, 0); w.err('Could not reach the sign-in service. Check your internet connection.'); });
+    });
+  }
+  if (w.adminAuth) {
+    var _adminAuth = w.adminAuth;
+    w.adminAuth = function () {
+      if (!on()) return _adminAuth.apply(this, arguments);
+      staffSignIn(w.$('adm_e').value, w.$('adm_p').value, 'admbtn');
+    };
+  }
   if (w.login) {
     var _login = w.login;
     w.login = function () {
       if (w.R != 'a' || !on()) return _login.apply(this, arguments);
-      var v = w.mail('le'); if (!v) return; var p = w.$('lp').value;
-      if (!p) { w.err('Please enter your password.'); return; }
-      w.authBusy('lbtn', 1, 'Checking…');
-      cli(function (c) {
-        c.auth.signInWithPassword({ email: v, password: p }).then(function (r) {
-          if (r.error) { w.authBusy('lbtn', 0); w.err('Incorrect admin email or password.'); return; }
-          c.rpc('is_staff').then(function (s) {
-            w.authBusy('lbtn', 0);
-            if (s.data === true) { C.staff = true; C.uid = r.data.user.id; w.go({ email: v, name: 'Admin', role: 'a' }); }
-            else { c.auth.signOut(); w.err('This account is not set up as ingage staff.'); }
-          });
-        });
-      });
+      staffSignIn(w.$('le').value, w.$('lp').value, 'lbtn');
+    };
+  }
+  // The site's own Supabase listener would log a staff member in as a student; skip it during/after staff sign-in.
+  if (w.sbUser) {
+    var _sbUser = w.sbUser;
+    w.sbUser = function () {
+      if (C.staffing || (w.US && w.US.role == 'a')) return;
+      return _sbUser.apply(this, arguments);
     };
   }
   // Staff see every learner's doubts from the server in the admin dashboard.
