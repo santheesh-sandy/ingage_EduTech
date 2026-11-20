@@ -96,7 +96,11 @@ test('end to end: website backend → fake Gemini server → reply', async () =>
     assert.equal(seen[0].auth, 'Bearer AQ.test-key');
     assert.equal(seen[0].body.model, 'gemini-3.8-flash');
     assert.match(seen[0].body.messages[0].content, /Digital Twin/);
-  } finally { site.close(); gemini.close(); }
+  } finally {
+    // Close both servers fully (incl. keep-alive sockets) before the test ends; on Windows, exiting while
+    // handles are still closing aborts Node with "Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)".
+    await Promise.all([site, gemini].map((s) => new Promise((r) => { s.close(r); s.closeAllConnections?.(); })));
+  }
 });
 
 test('the .env template placeholder is treated as "no key"', async () => {

@@ -152,6 +152,18 @@ ul.ck li:before{content:"✓";position:absolute;left:0;top:6px;width:19px;height
 #tw{color:var(--brt)}
 .cur{display:inline-block;width:3px;height:.85em;background:var(--br);margin-left:6px;vertical-align:-.05em;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
 .lp{font-size:clamp(17px,2.2vw,23px);font-weight:500;max-width:740px;color:#dbe5f7;margin:0}
+.lhg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:48px;align-items:center}
+.lhg .lp{font-size:clamp(16px,1.5vw,19px);line-height:1.55;max-width:560px}
+.lhg h1{font-size:clamp(26px,3.3vw,44px);text-transform:none;letter-spacing:-.02em;line-height:1.12;margin:18px 0 16px}.lhg h1 .nw{white-space:nowrap}.lhg h1 .hl{color:var(--brt)}
+.hbadge{display:inline-block;padding:7px 16px;border-radius:999px;background:rgba(141,198,63,.16);color:var(--brt);font-weight:700;font-size:13px;letter-spacing:.01em}
+.hcta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.hbtn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 20px;border-radius:12px;font:inherit;font-weight:700;font-size:14.5px;white-space:nowrap;cursor:pointer;text-decoration:none;transition:transform .2s var(--ease),box-shadow .2s,border-color .2s}
+.hbtn{background:linear-gradient(135deg,#6fa12e,#3f6a0c);color:#fff;border:0;box-shadow:0 14px 28px -14px rgba(74,122,16,.8)}.hbtn:hover{transform:translateY(-2px);box-shadow:0 18px 32px -14px rgba(74,122,16,.9)}
+.hbtn:focus-visible{outline:3px solid var(--br);outline-offset:2px}
+.lim{margin:0;animation:vin .8s .15s var(--ease) both;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14%,#000 94%,transparent 100%),linear-gradient(0deg,transparent 0,#000 16%,#000 90%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 14%,#000 94%,transparent 100%),linear-gradient(0deg,transparent 0,#000 16%,#000 90%,transparent 100%);mask-composite:intersect}
+.lim img{display:block;width:100%;height:auto}
+@media(max-width:900px){.lhg{grid-template-columns:1fr;gap:20px}.lim{-webkit-mask-image:linear-gradient(0deg,transparent 0,#000 14%,#000 92%,transparent 100%);mask-image:linear-gradient(0deg,transparent 0,#000 14%,#000 92%,transparent 100%)}}
+@media(max-width:520px){.hcta>*{flex:1 1 100%}}
 .of{display:flex;align-items:center;gap:22px 28px;flex-wrap:wrap;border:1px solid var(--ln2);background:rgba(14,29,58,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:20px;padding:22px 26px;margin:34px 0 28px;max-width:940px}
 .of>div:first-child{flex:1;min-width:240px}
 .lt{display:inline-block;background:var(--br);color:#0a1224;font-size:12px;font-weight:800;padding:4px 11px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
@@ -511,17 +523,18 @@ ol.ai-steps li b{display:block;line-height:1.35}ol.ai-steps li span{display:bloc
 </div></header>
 
 <section class="v" id="landing">
-<div class="lh" id="lh"><div class="w" style="z-index:2">
-<span class="gb">★ Industry-ready career training</span>
-<h1>Learn Skills. Build Careers.<br><span style="color:var(--brt)">Become Industry-Ready.</span></h1>
+<div class="lh" id="lh"><div class="w lhg" style="z-index:2">
+<div class="lht"><span class="hbadge">Industry-Relevant Learning</span>
+<h1><span class="nw">Learn Skills.</span> <span class="nw">Build Careers.</span><br><span class="nw hl">Become Industry-Ready.</span></h1>
 <p class="lp">Gain practical experience through expert-led training, real-world projects, and 100% placement assistance.</p>
-<div style="margin-top:26px"><a class="gbtn" style="background:var(--br);color:#0a1224" onclick="nav('courses')">View courses →</a></div>
+<div class="hcta"><a class="hbtn" href="#courses">Explore Courses <span aria-hidden="true">→</span></a></div></div>
+<figure class="lim"><img src="img/landing-hero.webp" width="1672" height="941" alt="Two smiling students with backpacks, surrounded by highlights: industry-aligned courses, hands-on projects, expert-led training, real-world experience, internships and placements"></figure>
 </div></div>
 <div class="ls"><div><b class="ncrs">6</b><span>Courses</span></div><div><b>40–60</b><span>Hours of hands-on training</span></div><div><b>5+</b><span>Capstone projects per track</span></div><div><b>1:1</b><span>Placement guidance</span></div></div>
 <div class="w" style="padding:70px 20px 0"><h2>Our <em>Impact</em></h2><p class="sub">Numbers that show what our learners and campuses achieve.</p><div class="im" id="im"><div><b data-n="500000">5,00,000+</b><span>Students Trained</span></div><div><b data-n="1750">1,750+</b><span>Partner Colleges</span></div><div><b data-n="75">75+</b><span>CoE Labs Built</span></div><div><b data-n="50">50+</b><span>Hackathons/Year</span></div><div><b data-n="10000">10,000+</b><span>Placements/Year</span></div><div><b data-n="10000">10,000+</b><span>Internships/Sem</span></div><div><b data-n="100000">1,00,000+</b><span>Campus-to-Corp</span></div><div><b data-n="3000">3,000+</b><span>FDPs Delivered</span></div></div><h2 style="margin-top:60px">Our <em>Partners</em></h2><p class="sub">Working with industry and government bodies.</p><div class="pt"><span>Google</span><span>Oracle</span><span>IBM</span><span>NVIDIA</span><span>HCLTech</span><span>ICT Academy</span><span>TNSDC</span><span>FICCI</span><span>Skill India</span></div></div>
 <div class="w" id="who" style="padding:70px 20px 0"><span class="gb">Emerging Tech &amp; Industry Integration Organisation</span><h2 style="margin-top:18px">Who <em>Are We?</em></h2><p class="sub" style="max-width:820px">InGage Technologies acts as a catalyst for campus transformation. We bridge the academic curriculum to enterprise engineering demands by delivering top-tier certified training, building local physical labs, and arranging direct industry pipelines.</p><div class="grid g3"><div class="lc" style="cursor:default"><div class="e">🧪</div><h3>Establish CoE Labs</h3><p>Setup state-of-the-art AR/VR/IoT infrastructure benches inside campus labs.</p></div><div class="lc" style="cursor:default"><div class="e">🎓</div><h3>Deliver Certified Courses</h3><p>Google Cloud &amp; developer tracks integrated into the institutional curriculum.</p></div><div class="lc" style="cursor:default"><div class="e">🛠️</div><h3>Hands-On Training</h3><p>Live industry mentor sessions, cloud sandbox access, and immersive hardware telemetry.</p></div><div class="lc" style="cursor:default"><div class="e">🏆</div><h3>Internships &amp; Hackathons</h3><p>Volumetric coding competitions, stipended roles, and physical prototyping challenges.</p></div><div class="lc" style="cursor:default"><div class="e">💼</div><h3>Placement Support</h3><p>Linking skilled cohorts directly to premium enterprise recruitment pipelines.</p></div><div class="lc" style="cursor:default"><div class="e">🌉</div><h3>Industry-Academia Bridge</h3><p>Syncing campus pedagogy and dynamic commercial engineering requirements.</p></div></div></div>
 <div class="w" style="padding:70px 20px 20px"><h2>Our <em>Courses</em></h2><p class="sub">Pick a course and start building real skills.</p><div class="grid g4" id="lg"></div>
-<h2 style="margin-top:70px">See <em>ingage</em> in 30 seconds</h2><p class="sub">Watch the intro video.</p><div id="pr" style="max-width:760px"></div>
+<h2 id="intro" style="margin-top:70px;scroll-margin-top:90px">See <em>ingage</em> in 30 seconds</h2><p class="sub">Watch the intro video.</p><div id="pr" style="max-width:760px"></div>
 <h2 style="margin-top:70px">Why <em>ingage</em></h2><p class="sub">Training built around outcomes.</p>
 <div class="grid g4"><div class="lc" style="cursor:default"><div class="e">🧑‍🏫</div><h3>Expert Mentors</h3><p>Practitioners who teach from real project experience.</p></div><div class="lc" style="cursor:default"><div class="e">🧪</div><h3>Live Projects</h3><p>Every module ends with practical lab work.</p></div><div class="lc" style="cursor:default"><div class="e">🎓</div><h3>Verified Certificates</h3><p>Unique certificate IDs you can share and verify.</p></div><div class="lc" style="cursor:default"><div class="e">🚀</div><h3>Placement Support</h3><p>Portfolio reviews, mock interviews and guidance.</p></div></div>
 <h2 style="margin-top:70px">Our <em>Journey</em></h2><p class="sub">From first call to first job.</p>

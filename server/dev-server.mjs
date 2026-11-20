@@ -9,7 +9,7 @@ import { createChatHandler, pickProvider } from '../supabase/functions/_shared/c
 import { loadEnv } from './env.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp','.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
 
 export function createServer(env = (k) => process.env[k]) {
   const chat = createChatHandler({ env });
@@ -40,6 +40,21 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   loadEnv(join(dirname(fileURLToPath(import.meta.url)), '..', '.env'));
   const p = pickProvider((k) => process.env[k]);
   console.log(p ? `AI provider: ${p.name}${p.model ? ' · model ' + p.model : ''}` : '⚠ No AI key yet – open .env and replace PASTE_YOUR_AI_API_KEY_HERE with your AI_API_KEY. Until then the chatbot uses only predefined answers (or run npm run dev for demo AI replies).');
-  const port = +(process.env.PORT || 5173);
-  createServer().listen(port, () => console.log(`ingage site → http://localhost:${port}  (chat backend at /api/chat${process.env.MOCK_AI === '1' ? ', MOCK_AI on' : ''})`));
+  const first = +(process.env.PORT || 5173);
+  const server = createServer();
+  let port = first;
+  // If the port is taken (often an earlier dev server still running), try the next few instead of crashing.
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE' && !process.env.PORT && port < first + 10) {
+      console.log(`Port ${port} is busy – trying ${port + 1}…`);
+      server.listen(++port);
+      return;
+    }
+    console.error(err.code === 'EADDRINUSE'
+      ? `Port ${port} is already in use. Stop the other server (or close its terminal), or run with a different PORT.`
+      : err);
+    process.exit(1);
+  });
+  server.on('listening', () => console.log(`ingage site → http://localhost:${port}  (chat backend at /api/chat${process.env.MOCK_AI === '1' ? ', MOCK_AI on' : ''})`));
+  server.listen(port);
 }

@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node server/dev-server.mjs",
     "dev": "node server/dev-server.mjs --mock",
-    "test": "node --test --test-force-exit tests/*.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "build": "node scripts/build.mjs",
     "deploy:fn": "supabase functions deploy chat --no-verify-jwt",
     "check-ai": "node scripts/check-ai.mjs",

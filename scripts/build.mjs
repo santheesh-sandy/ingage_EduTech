@@ -18,8 +18,16 @@ for (const [tag, file] of styles) {
   const css = (await readFile(pub(file), 'utf8')).replace(/<\/style/gi, '<\\/style');
   out = out.replace(tag, () => '<style>\n' + css + '\n</style>');
 }
+// Inline local images (img/...) as data URIs so dist/index.html stays a single file.
+const IMG_TYPES = { webp: 'image/webp', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', svg: 'image/svg+xml' };
+const imgs = [...new Set([...out.matchAll(/src="(img\/[\w.-]+\.(webp|png|jpe?g|svg))"/g)].map((m) => m[1]))];
+for (const file of imgs) {
+  const type = IMG_TYPES[file.split('.').pop()];
+  const data = 'data:' + type + ';base64,' + (await readFile(pub(file))).toString('base64');
+  out = out.split('src="' + file + '"').join('src="' + data + '"');
+}
 const api = process.env.CHAT_API; // optional: bake the backend URL in, e.g. CHAT_API=https://x.supabase.co/functions/v1/chat
 if (api) out = out.replace("var CHAT_API='';", () => 'var CHAT_API=' + JSON.stringify(api) + ';');
 await mkdir(join(root, 'dist'), { recursive: true });
 await writeFile(join(root, 'dist/index.html'), out);
-console.log(`built dist/index.html (inlined ${scripts.length} scripts, ${styles.length} styles)` + (api ? ' with CHAT_API=' + api : ''));
+console.log(`built dist/index.html (inlined ${scripts.length} scripts, ${styles.length} styles, ${imgs.length} images)` + (api ? ' with CHAT_API=' + api : ''));
