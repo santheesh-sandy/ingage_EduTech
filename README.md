@@ -92,20 +92,38 @@ If the key is missing or wrong, the chatbot still works with its predefined answ
 
 ## Go live (Supabase)
 
-```bash
-supabase link --project-ref YOUR_PROJECT_REF
-npm run secrets:fn                      # uploads AI_API_KEY, AI_MODEL, AI_BASE_URL from .env
-supabase secrets set ALLOWED_ORIGINS=https://your-site.com,https://www.your-site.com
-npm run deploy:fn                       # supabase functions deploy chat --no-verify-jwt
-```
-
-Then in `public/index.html` fill in `CFG.supabase` (`url` + publishable `key`). The chatbot finds
-`https://YOUR_REF.supabase.co/functions/v1/chat` by itself. Build the single file with:
+Project: `ingage-edutech` (`https://mjmkkboesjxrpowkmjjf.supabase.co`). `.env` (git-ignored) holds `SUPABASE_URL`,
+`SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_ACCESS_TOKEN` (for the CLI and the management API) and the AI settings.
 
 ```bash
-npm run build                                           # dist/index.html
-CHAT_API=https://other-backend.example/chat npm run build   # if your backend is not on Supabase
+npm run db:push      # create/update tables and security rules (supabase/migrations/…_learner_data.sql)
+npm run deploy:fn    # deploy the chat function and upload ONLY its secrets (AI_*, ALLOWED_ORIGINS, RATE_LIMIT, CHAT_DB_KEY)
+npm run gold         # 38 gold conversations against the real AI → docs/gold-eval-results.md
+npm run build        # dist/index.html, the single file to upload
 ```
+
+`CFG.supabase` in `public/index.html` holds the project URL and the **publishable** key (safe in a page); the chatbot finds
+`…/functions/v1/chat` by itself.
+
+**Before going live, set `ALLOWED_ORIGINS`** in `.env` to your site (for example `ALLOWED_ORIGINS=https://ingage.in,https://www.ingage.in`)
+and run `npm run deploy:fn` again. Until then any website can call the function (it is still rate-limited).
+
+**Mentors and admins** use Admin login with a normal account (sign up once on the site) that has a row in `public.staff`.
+When Supabase is on, the in-page demo admin password is not accepted. Add a staff member with:
+
+```bash
+node scripts/sb-sql.mjs -e "insert into public.staff (user_id, role) select id, 'admin' from auth.users where email = 'name@example.com'"
+```
+
+### Server data (Supabase; Row Level Security on every table)
+
+| Table | Holds | Access |
+|---|---|---|
+| `profiles` | name, phone, situation, goal, hours per week | the learner; staff can read |
+| `learner_state` | enrollments and LMS progress (previously browser-only) | the learner; staff can read |
+| `doubts` | mentor doubts and mentor answers | learner adds/reads own; staff read and answer |
+| `staff` | mentors and admins | added by the project owner only |
+| `chat_rate` | shared chat rate limit | the chat function only |
 
 ### Backend settings (Supabase secrets or environment variables)
 
@@ -114,27 +132,31 @@ CHAT_API=https://other-backend.example/chat npm run build   # if your backend is
 | `AI_API_KEY` + `AI_BASE_URL` + `AI_MODEL` | any OpenAI-compatible API (used first; this project: Gemini) |
 | `AI_REASONING_EFFORT` | sent as `reasoning_effort` (Gemini default `low`; empty = not sent) |
 | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GEMINI_API_KEY` | alternatives, checked after `AI_API_KEY` |
-| `CHAT_MODEL` | override model (defaults: `claude-haiku-5-5`, `gpt-4o-mini`, `gemini-2.5-flash`) |
-| `ALLOWED_ORIGINS` | comma‑separated site origins allowed to call the function (default `*`; set this in production) |
-| `RATE_LIMIT` | messages per IP per minute (default 15) |
+| `CHAT_MODEL` | override model |
+| `ALLOWED_ORIGINS` | comma-separated site origins allowed to call the function (default `*`; **set this in production**) |
+| `RATE_LIMIT` | messages per user or IP per minute, shared across all function instances (default 15) |
+| `CHAT_DB_KEY` | the project secret key; the function uses it for the rate limit and to look up signed-in learners |
 | `MOCK_AI=1` | canned replies, no AI call |
 
-Never put an AI key in `index.html`.
+Never put an AI key or the secret key in `index.html`.
 
-## How a message is answered
+## How a message is answered (gold document rules)
 
-1. **Predefined routes**: course cards, fee, salary, roles, enroll, compare, job openings, experience level, module lists, mentor doubts, help topics.
-2. A predefined reply is **replaced by live AI** when it is only a fallback for the question:
-   the "I'm not sure" reply, the help menu shown for unmatched non‑English questions, "couldn't match your interest",
-   a course overview shown for an unrelated question, a keyword match where most of the question is about something else
-   (e.g. "weekend batches for working professionals in Madurai"), or a question about fitting study around work/time
-   ("along with my job", "night shift", "weekends", and Tamil/Hindi/Telugu/Kannada equivalents).
-3. Strong course‑knowledge matches ("What is DHCP?") stay predefined.
-4. **Live AI** gets: recent chat (HTML stripped), language, chat mode, the course being viewed or studied, matching knowledge entries,
-   the predefined answer as a hint, and all course data (fees, roles, salaries, prerequisites). It's told not to invent fees,
-   batches, locations or guarantees.
-5. If the AI fails, takes over 25 s, or the function doesn't exist (404), the predefined answer is shown instead.
-6. Mentor doubts (`Send doubt to mentor`) are always saved for the mentor, never sent to the AI.
+1. **The AI leads.** Every typed question goes to the AI when it is available. The old keyword answer is sent to it as context,
+   and that answer's buttons and course cards are shown under the AI reply. If the AI is off or fails, the keyword answer is shown.
+2. **Rules** (`systemPrompt` in `supabase/functions/_shared/chat-core.js`): an honest guide; a fit check with at most 3 questions,
+   one at a time (situation, goal, hours per week); a recommendation with 2–3 reasons and what the course will not give, or a plain
+   "nothing fits"; ingage courses only; "coming soon" courses never pushed. Learners get concept help with an example and a module
+   reference, never quiz answers; career answers use 5 parts (Goal, How far this course gets you, Gaps, Next steps, Honest timing).
+   No job or salary guarantees and no unsourced figures; no pressure tactics; never asks for or repeats Aadhaar, PAN, card numbers,
+   OTPs or passwords (these are also removed before the AI sees them); says it is an AI; under-18s are pointed to a parent or guardian.
+3. **Hand-offs**: the AI ends a reply with `HANDOFF: support | mentor | helpline`, and the site turns it into buttons (contact and call,
+   send doubt to mentor, Tele-MANAS 14416 / 112). Distress is also detected on the server, so the helpline is always shown even if
+   the AI forgets or fails.
+4. **Login check**: signed-in learners send their Supabase access token; the function reads their enrollments and profile from the
+   database instead of trusting the browser. Everyone else is treated as a visitor.
+5. **Role-to-skills map** (`public/role-skills.js`, a DRAFT for ingage to sign off) feeds career answers.
+6. Mentor doubts (`Send doubt to mentor`) are saved to the `doubts` table, never sent to the AI; mentors answer them in the admin dashboard.
 
 ## Bugs fixed
 

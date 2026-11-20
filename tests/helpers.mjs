@@ -21,9 +21,11 @@ export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * @param {(body:object)=>({status?:number, reply?:string}|Promise<any>)} [o.ai]  mock backend
  * @param {string} [o.url]
  * @param {object} [o.storage]   localStorage seed
+ * @param {{url:string,key:string}} [o.supabase]  CFG.supabase for the page (default: off, so tests never reach the real project)
  */
-export async function loadSite({ chatApi = 'https://mock.test/chat', ai, url = 'https://site.test/#home', storage = {}, session = {}, teaserMs = 600000 } = {}) {
-  let html = HTML.replace("var CHAT_API='';", 'var CHAT_API=' + JSON.stringify(chatApi) + ';')
+export async function loadSite({ chatApi = 'https://mock.test/chat', ai, url = 'https://site.test/#home', storage = {}, session = {}, teaserMs = 600000, supabase = { url: '', key: '' } } = {}) {
+  let html = HTML.replace(/var CFG=\{supabase:\{url:'[^']*',key:'[^']*'\}/, () => 'var CFG={supabase:' + JSON.stringify(supabase))
+    .replace("var CHAT_API='';", 'var CHAT_API=' + JSON.stringify(chatApi) + ';')
     .replace(/<script src="https?:[^"]+"><\/script>/g, '')
     .replace(/<script src="([\w.-]+\.js)"><\/script>/g, (_, f) => '<script>' + pub(f) + '</script>')
     .replace(/<link rel="stylesheet" href="([\w.-]+\.css)">/g, (_, f) => '<style>' + pub(f) + '</style>');

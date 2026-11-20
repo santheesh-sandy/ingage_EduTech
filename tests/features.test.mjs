@@ -160,7 +160,7 @@ test('chat button floats on every page, including the new internship page', asyn
 });
 
 test('chat stays open while moving between pages and keeps the conversation', async () => {
-  const s = await loadSite();
+  const s = await loadSite({ chatApi: '' });
   s.open(); await s.ask('How do I enroll?');
   const n = s.w.document.querySelectorAll('#cbm .ai-bub').length;
   for (const h of ['courses', 'internship', 'about', 'landing']) { s.w.location.hash = '#' + h; await sleep(40); }

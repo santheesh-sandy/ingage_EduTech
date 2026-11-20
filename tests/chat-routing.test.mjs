@@ -3,10 +3,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadSite, sleep } from './helpers.mjs';
 
+// Without a live AI, keyword templates answer (and are the fallback when the AI fails).
 const PREDEFINED = [
   ['What is the fee for the networking course?', /₹4,999/],
   ['How do I enroll?', /Enroll/i],
-  ['salary after cyber security', /LPA/],
+  ['salary after cyber security', /does not publish verified salary figures/],
   ['What is DHCP?', /DHCP/],
   ['hello', /Hello/],
   ['lidar', /LiDAR/],
@@ -33,24 +34,23 @@ test('page loads without script errors', async () => {
   s.close();
 });
 
-test('predefined questions are answered without calling the AI', async () => {
-  const s = await loadSite();
+test('with no live AI, keyword templates answer without any network call', async () => {
+  const s = await loadSite({ chatApi: '' });
   s.open();
   for (const [q, re] of PREDEFINED) {
-    const n = s.calls.length;
     await s.ask(q);
-    assert.equal(s.calls.length, n, `"${q}" should not call the AI`);
     assert.match(s.lastText(), re, `"${q}" predefined answer`);
     assert.equal(s.w.AILIVE.lastSource, 'predefined');
   }
+  assert.equal(s.calls.length, 0);
   assert.deepEqual(s.errors, []);
   s.close();
 });
 
-test('questions the predefined answers do not cover go to the live AI', async () => {
+test('with live AI on, the AI answers every question (templates are only context and cards)', async () => {
   const s = await loadSite();
   s.open();
-  for (const q of LIVE) {
+  for (const q of LIVE.concat(PREDEFINED.map((x) => x[0]))) {
     const n = s.calls.length;
     await s.ask(q);
     assert.equal(s.calls.length, n + 1, `"${q}" should call the AI`);
@@ -62,22 +62,43 @@ test('questions the predefined answers do not cover go to the live AI', async ()
   s.close();
 });
 
-test('on a course page, an unrelated question goes to AI but course questions stay predefined', async () => {
+test('template buttons and course cards are shown under the AI reply', async () => {
+  const s = await loadSite();
+  s.open();
+  await s.ask('Show all courses');
+  const b = s.last();
+  assert.match(b.textContent, /AI answer for: Show all courses/);
+  assert.ok(b.querySelector('.ai-grid, .ai-acts'), 'cards from the template are kept');
+  assert.equal(s.calls.at(-1).body.predefined.length > 0, true, 'template text is context for the AI');
+  s.close();
+});
+
+test('on a course page, questions go to the AI with that course in focus', async () => {
   const s = await loadSite({ url: 'https://site.test/#course' });
   s.w.CVI = 1; s.open();
-  let n = s.calls.length;
-  await s.ask('Can I attend the lab sessions on weekends?');
-  assert.equal(s.calls.length, n + 1);
-  assert.equal(s.calls.at(-1).body.course.title, 'IT Network System Administrator');
-  n = s.calls.length;
-  await s.ask('how long is this course');
-  assert.equal(s.calls.length, n, 'duration is predefined');
-  assert.match(s.lastText(), /60/);
-  assert.doesNotMatch(s.lastText(), /DHCP|Ubuntu/, 'not an unrelated quiz question');
-  n = s.calls.length;
-  await s.ask('what is the fee for this course?');
-  assert.equal(s.calls.length, n, 'fee is predefined');
-  assert.match(s.lastText(), /₹4,999/);
+  for (const q of ['Can I attend the lab sessions on weekends?', 'how long is this course', 'what is the fee for this course?']) {
+    const n = s.calls.length;
+    await s.ask(q);
+    assert.equal(s.calls.length, n + 1, q);
+    assert.equal(s.calls.at(-1).body.course.title, 'IT Network System Administrator');
+  }
+  s.close();
+});
+
+test('hand-offs from the AI become buttons: support, mentor and helpline', async () => {
+  const s = await loadSite({ ai: (b) => {
+    const q = b.messages.at(-1).content;
+    if (/refund/.test(q)) return { reply: 'Our team can help.', json: { reply: 'Our team can help.', handoff: ['support'] } };
+    return { json: { reply: 'Please talk to someone now.', handoff: ['helpline'] } };
+  } });
+  s.open();
+  await s.ask('My payment failed and I want a refund');
+  assert.match(s.lastText(), /Our team can help\./);
+  assert.ok([...s.last().querySelectorAll('button,a')].some((x) => /contact|call/i.test(x.textContent)), 'support buttons');
+  await s.ask('I feel hopeless and want to give up on everything');
+  const h = s.last();
+  assert.ok(h.querySelector('a[href="tel:14416"]'), 'Tele-MANAS call link');
+  assert.equal(h.querySelector('.ai-grid'), null, 'no course cards in a crisis reply');
   s.close();
 });
 
@@ -127,7 +148,7 @@ test('a slow AI shows a typing bubble and blocks double sends', async () => {
   assert.equal(s.calls.length, 1);
   release(); await sleep(50);
   assert.equal(s.typing(), 0);
-  assert.equal(s.lastText(), 'late reply');
+  assert.match(s.lastText(), /^late reply/);
   s.close();
 });
 
@@ -152,7 +173,7 @@ test('auto-detected language switches back to English; a chosen language stays',
   assert.equal(s.calls.at(-1).body.language, 'Tamil');
   await s.ask('how long is the lidar course');
   assert.equal(s.w.HL, 'en', 'back to English after an English message');
-  assert.match(s.lastText(), /40 hours/i);
+  assert.equal(s.calls.at(-1).body.language, 'English');
   s.w.aiSetLang('ta'); await sleep(50);
   await s.ask('what is the fee for lidar');
   assert.equal(s.w.HL, 'ta', 'manually chosen Tamil is kept');
@@ -196,9 +217,11 @@ test('enrolled learner: doubts go to the AI with course context; mentor doubts a
   assert.equal(b.mode, 'post');
   assert.deepEqual(b.user.enrolled, ['IT Network System Administrator']);
   assert.equal(b.course.title, 'IT Network System Administrator');
+  assert.ok(b.roles.some((r) => r.role === 'Network Support Engineer'), 'role-to-skills map for their course is sent');
+  assert.equal(b.courses.some((c) => 'salaryLPA' in c), false, 'no unsourced salary figures sent to the AI');
   n = s.calls.length;
   await s.ask('What is DHCP?');
-  assert.equal(s.calls.length, n, 'course knowledge answers stay predefined');
+  assert.equal(s.calls.length, n + 1, 'concept questions go to the AI too');
   s.w.hMentor(); await sleep(500);
   n = s.calls.length;
   await s.ask('My VLAN lab is not pinging between switches, please help');

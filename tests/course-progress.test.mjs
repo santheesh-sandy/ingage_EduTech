@@ -7,9 +7,9 @@ import { loadSite, sleep } from './helpers.mjs';
 const EMAIL = 'learner@test.in';
 const text = (el) => (el ? el.textContent.replace(/\s+/g, ' ').trim() : '');
 const enr = (ci, done = []) => ({ [ci]: { txn: 'T' + ci, inv: 'ING/' + ci, date: '19/11/2026', amt: 4999, list: 4999, pm: 'UPI', done } });
-async function learner(courses = { 1: [] }, extra = {}) {
+async function learner(courses = { 1: [] }, extra = {}, opts = {}) {
   const e = Object.assign({}, ...Object.entries(courses).map(([ci, d]) => enr(ci, d)));
-  const s = await loadSite({ url: 'https://site.test/#home', storage: { sf_enr: JSON.stringify({ [EMAIL]: e }), ...extra } });
+  const s = await loadSite({ url: 'https://site.test/#home', storage: { sf_enr: JSON.stringify({ [EMAIL]: e }), ...extra }, ...opts });
   s.w.US = { email: EMAIL, name: 'Test Learner', role: 's' };
   s.w.upd && s.w.upd();
   return s;
@@ -169,16 +169,20 @@ test('recommendations appear in My Learning and on the Internships page', async 
 
 test('chatbot answers "my progress" and "which internships am I eligible for" from the learner data', async () => {
   const s0 = await loadSite();
+  // templates (used when the AI is off or fails)
+  const t = await learner({ 1: firstN(s0.w, 1, 55) }, {}, { chatApi: '' });
+  t.w.LC = 1; t.w.location.hash = '#learn'; await sleep(60);
+  t.open(); await sleep(30);
+  await t.ask('What is my progress?');
+  assert.match(t.lastText(), /IT Network System Administrator: \d+% complete .*Next milestone: 60%/);
+  await t.ask('Which internships am I eligible for?');
+  assert.match(t.lastText(), /Eligible: .*Network Support Intern/);
+  assert.match(t.lastText(), /Next: Complete Module/);
+  assert.equal(t.calls.length, 0);
+  // live AI: the same learner data goes to the AI
   const s = await learner({ 1: firstN(s0.w, 1, 55) });
   s.w.LC = 1; s.w.location.hash = '#learn'; await sleep(60);
   s.open(); await sleep(30);
-  const n = s.calls.length;
-  await s.ask('What is my progress?');
-  assert.match(s.lastText(), /IT Network System Administrator: \d+% complete .*Next milestone: 60%/);
-  await s.ask('Which internships am I eligible for?');
-  assert.match(s.lastText(), /Eligible: .*Network Support Intern/);
-  assert.match(s.lastText(), /Next: Complete Module/);
-  assert.equal(s.calls.length, n, 'answered without the AI');
   await s.ask('Can you explain how OSPF works compared to RIP in detail?');
   const u = s.calls.at(-1).body.user;
   assert.equal(u.progress[0].course, 'IT Network System Administrator');

@@ -1,5 +1,6 @@
-# Supabase CLI settings for this project (run `supabase link --project-ref YOUR_REF` first)
+# Supabase CLI settings for this project. Deploy with: npm run deploy:fn
 [functions.chat]
-# The website may call this with a publishable key, so JWT checks are off;
-# the function protects itself with ALLOWED_ORIGINS and a per-IP rate limit.
+# Visitors call this with the publishable key, so the gateway JWT check is off. The function itself
+# checks signed-in learners' tokens (Supabase Auth), allows only ALLOWED_ORIGINS, and applies a shared
+# per-user / per-IP rate limit (Postgres function public.chat_hit).
 verify_jwt = false

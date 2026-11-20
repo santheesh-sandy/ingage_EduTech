@@ -41,7 +41,7 @@
         'Career stage 3 (mid level): Network Engineer, Infrastructure Engineer, Network Analyst. Skills: VLANs, subnetting, OSPF/BGP, firewall configuration, monitoring. Certifications: CCNP, JNCIA, Fortinet NSE 4.',
         'Career stage 4 (senior): Senior Network Engineer, Network Security Engineer, VoIP/Telecom Specialist. Skills: SD-WAN, MPLS, advanced firewalls, network automation with Python and Ansible. Certifications: CCNP Security, CEH, VMware NSX.',
         'Career stage 5 (architect): Network Architect, Cloud Network Architect, Infrastructure Manager. Certifications: CCIE, AWS Networking Specialty, TOGAF.',
-        'Starting salaries for diploma holders (CSE/IT): IT Support Technician ₹2.0–3.0 LPA; Network Support Engineer ₹2.5–4.0 LPA; Junior System Administrator ₹3.0–4.5 LPA; Field Engineer ₹2.5–4.0 LPA; Data Center Technician ₹3.0–5.0 LPA.',
+        'Salary: ingage does not publish verified salary figures; pay depends on the company, city, skills and interviews, and is never guaranteed.',
         'Certifications that boost a career after a diploma: CompTIA A+, CCNA, CompTIA Network+, Microsoft Azure Fundamentals (AZ-900).',
         'Career path: start as Support Technician / Field Engineer, gain 1–2 years experience and CCNA, move to Network Engineer/Admin, learn security or cloud networking, grow into Senior Engineer / Network Architect.',
       ]],
@@ -278,9 +278,27 @@
   };
 
   /* ---------- context for the live AI ---------- */
+  // Any course whose curriculum was added in the admin course editor (modules → lessons, reading text, MCQs).
+  function curriculumKb(c, words) {
+    if (!c || !c.cur || !c.cur.length) return null;
+    var terms = words.split(/[^a-z0-9.+#-]+/).filter(function (x) { return x.length > 2; }), passages = [];
+    c.cur.forEach(function (m, n) {
+      (m.ls || []).forEach(function (l) {
+        String((l.ty == 'read' && l.tx) || l.t || '').split(/\n{2,}/).forEach(function (p) {
+          var t = p.toLowerCase(), sc = 0; terms.forEach(function (x) { if (t.indexOf(x) > -1) sc++; });
+          if (sc) passages.push([sc, 'Module ' + (n + 1) + ' – ' + l.t + ': ' + p.trim().slice(0, 700)]);
+        });
+      });
+    });
+    return {
+      hours: c.h,
+      modules: c.cur.map(function (m, n) { return 'Module ' + (n + 1) + ': ' + m.t + ' (' + (m.ls || []).map(function (l) { return l.t; }).join('; ') + ')'; }),
+      relatedSlides: passages.sort(function (a, b) { return b[0] - a[0]; }).slice(0, 3).map(function (x) { return x[1]; }),
+    };
+  }
   w.courseKbFor = function (ci, q) {
-    if (ci != 1) return null;
     var words = String(q || '').toLowerCase();
+    if (ci != 1) return curriculumKb(w.cf && w.cf(+ci), words);
     // the decks most related to the question (by simple word overlap), plus the fixed outline
     var scored = Object.keys(KB.decks).map(function (id) {
       var d = KB.decks[id], txt = (d[0] + ' ' + d[1].join(' ')).toLowerCase(), sc = 0;

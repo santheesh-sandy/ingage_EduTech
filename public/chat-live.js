@@ -14,6 +14,8 @@
   function aiUrl() {
     if (S.dead) return '';
     if (w.CHAT_API) return w.CHAT_API;
+    // local dev server (npm start) runs the same chat backend with the key from .env
+    if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && location.port) return '/api/chat';
     if (w.sbOn() && w.CHAT_FN) return String(w.CFG.supabase.url).replace(/\/+$/, '') + '/functions/v1/' + w.CHAT_FN;
     if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return '/api/chat';
     return '';
@@ -98,6 +100,7 @@
   }
 
   /* ---------- live request ---------- */
+  function enrolledIds() { return w.US ? Object.keys(w.myE()).map(Number).filter(function (i) { return w.cf(i); }) : []; }
   function payload(q, fallback) {
     var sc = (w.AIM == 'pre' ? w.aiScope() : null) || w.aiCur() || (w.AIC && w.cf(w.AIC) && !w.cf(w.AIC).hid ? w.cf(w.AIC) : null);
     var ctx = w.kSearch(q).concat(sc ? w.kSearch(q + ' ' + sc.t) : []).map(function (x) { return x.e.t + ': ' + x.e.x; })
@@ -105,24 +108,70 @@
     var msgs = w.CH.slice(-12).map(function (m) {
       return { role: m.role, content: (m.role == 'assistant' ? aiPlain(m.content) : String(m.content)).slice(0, 1200) };
     }).filter(function (m) { return m.content; });
+    var ids = enrolledIds(), focus = sc ? sc.i : ids[0];
     return {
       messages: msgs, mode: w.AIM, lang: w.HL, language: AILN[w.HL] || 'English', page: location.hash,
-      user: w.US ? { enrolled: Object.keys(w.myE()).map(function (i) { return w.cf(+i) && w.cf(+i).t; }).filter(Boolean), progress: w.learnerSummary ? w.learnerSummary() : [] } : null,
+      user: w.US ? { enrolled: ids.map(function (i) { return w.cf(i).t; }), progress: w.learnerSummary ? w.learnerSummary() : [] } : null,
+      profile: w.cloudProfile ? w.cloudProfile() : null,
       course: sc ? { title: sc.t, category: sc.d, hours: sc.h, fee: w.fee(sc.f), status: sc.soon ? 'coming soon' : 'open' } : null,
-      context: ctx, predefined: aiPlain(fallback).slice(0, 800),
-      courseMaterial: w.courseKbFor && (!sc || sc.i == 1) ? w.courseKbFor(1, q) : null,
+      context: ctx, predefined: aiPlain(fallback).slice(0, 600),
+      roles: w.rolesFor ? w.rolesFor(q, (sc ? [sc.i] : []).concat(ids)) : [],
+      // detailed material exists for courses that have it (today: course 1); others are described by their syllabus
+      courseMaterial: w.courseKbFor && focus ? w.courseKbFor(focus, q) : (w.courseKbFor && !sc ? w.courseKbFor(1, q) : null),
       courses: w.cxVis().map(function (c) {
         return { title: c.t, category: c.d, hours: c.h, fee: w.fee(c.f) + ' (incl. GST)', status: c.soon ? 'coming soon' : 'open', summary: c.s,
           learn: c.l, outcomes: c.o, skills: c.k, jobRoles: c.jr, industries: c.ind, prerequisites: c.pre,
-          salaryLPA: (c.sal || []).map(function (x) { return x[0] + ': ' + x[1] + '-' + x[2] + ' LPA'; }),
           syllabus: (w.aiMods ? w.aiMods(c) : []).map(function (m) { return m.t; }) };
       })
     };
   }
+
+  /* ---------- template answers become cards under the AI reply ---------- */
+  function cardsFrom(html) {
+    var d = document.createElement('div'); d.innerHTML = String(html || '');
+    var keep = [];
+    d.querySelectorAll('.ai-grid, .ai-acts').forEach(function (x) {
+      if (!keep.some(function (k) { return k.contains(x); })) keep.push(x);
+    });
+    var loose = [].filter.call(d.querySelectorAll('button[onclick], a[onclick], a.lk[href]'), function (b) {
+      return !keep.some(function (k) { return k.contains(b); });
+    });
+    var out = keep.map(function (x) { return x.outerHTML; }).join('');
+    if (loose.length) out += '<div class="ai-acts">' + loose.slice(0, 4).map(function (b) { b.classList.add('ai-btn'); return b.outerHTML; }).join('') + '</div>';
+    return out;
+  }
+
+  /* ---------- hand-offs (support, mentor, helpline) ---------- */
+  var LASTQ = '';
+  w.aiHandMentor = function () {
+    if (!w.US || !w.isEn()) { w.cbM('b', w.hT().mentorLogin, 1); return; }
+    var q = LASTQ; if (!q) return w.hMentor();
+    w.cbM('u', w.hT().b.mentor);
+    w.aiTyping(function () { w.cbM('b', w.hSaveDoubt(q), 1); });
+  };
+  function handoffHtml(list) {
+    var t = w.hT(), h = '';
+    if (list.indexOf('helpline') > -1) {
+      h += '<div class="ai-help" role="note"><b>Talk to someone now – free, 24x7</b><br>' +
+        '<a class="ai-btn p" href="tel:14416">Call Tele-MANAS 14416</a> <a class="ai-btn" href="tel:18008914416">1-800-891-4416</a> ' +
+        '<a class="ai-btn" href="tel:112">Emergency 112</a></div>';
+    }
+    var b = [];
+    if (list.indexOf('support') > -1) b.push('<button class="ai-btn p" onclick="hCt()">' + t.b.contact + '</button>', '<a class="ai-btn" href="tel:+919941656492">Call +91 99416 56492</a>');
+    if (list.indexOf('mentor') > -1) b.push('<button class="ai-btn p" onclick="aiHandMentor()">' + t.b.mentor + '</button>');
+    if (b.length) h += '<div class="ai-acts">' + b.join('') + '</div>';
+    return h;
+  }
+
+  function authHeaders() {
+    var hd = { 'Content-Type': 'application/json' };
+    if (!w.CHAT_API && w.sbOn()) { hd.apikey = w.CFG.supabase.key; hd.Authorization = 'Bearer ' + (w.SBTOKEN || w.CFG.supabase.key); }
+    else if (w.SBTOKEN) hd.Authorization = 'Bearer ' + w.SBTOKEN;
+    return hd;
+  }
   function aiAsk(q, fallback) {
-    var url = aiUrl(), hd = { 'Content-Type': 'application/json' };
-    if (!w.CHAT_API && w.sbOn()) { hd.Authorization = 'Bearer ' + w.CFG.supabase.key; hd.apikey = w.CFG.supabase.key; }
-    S.busy = 1;
+    var url = aiUrl(), hd = authHeaders();
+    LASTQ = q; S.busy = 1;
     var bub = waitBubble(), ac = w.AbortController ? new AbortController() : null,
       tm = setTimeout(function () { if (ac) ac.abort(); }, 25000);
     function done(html, src) {
@@ -130,7 +179,13 @@
     }
     w.fetch(url, { method: 'POST', headers: hd, signal: ac ? ac.signal : undefined, body: JSON.stringify(payload(q, fallback)) })
       .then(function (x) { if (x.status == 404 && !w.CHAT_API) S.dead = 1; if (!x.ok) throw x.status; return x.json(); })
-      .then(function (j) { if (!j || !j.reply) throw 0; done(aiMd(j.reply), 'ai'); })
+      .then(function (j) {
+        if (!j || !j.reply) throw 0;
+        var ho = Array.isArray(j.handoff) ? j.handoff : [];
+        S.lastHandoff = ho;
+        // in a crisis, no sales cards – only the care message and helpline
+        done(aiMd(j.reply) + handoffHtml(ho) + (ho.indexOf('helpline') > -1 ? '' : cardsFrom(fallback)), 'ai');
+      })
       .catch(function () { done(fallback, 'fallback'); });
   }
 
@@ -168,18 +223,26 @@
     w.$('cbx').value = ''; w.cbM('u', q); w.cbQ([]);
     langBefore(q);
     S.ov = 0; S.sure = 0;
-    var hl0 = w.HL, r = w.aiRoute(q), live = aiLive();
+    var live = aiLive();
+    // "Send doubt to mentor" mode: the typed message IS the doubt – save it, no AI.
+    if (w.CBMODE == 'doubt') return show(w.aiRoute(q), 'predefined');
+    var hl0 = w.HL, r = w.aiRoute(q);
     if (w.HL != hl0 && w.HL != 'en') setAuto(1);
-    if (r && !(live && aiGenR(r, q))) return show(r, 'predefined');
-    if (r) return aiAsk(q, r);
-    var fb = w.cbA(q), gen = String(fb).indexOf(w.AINOT) == 0 || String(fb).indexOf('Tell me your interest') == 0,
-      kb = gen || live ? w.kAnswer(q) : '';
-    if (!live) return show(gen && kb ? kb : fb, 'predefined');
-    if (!gen && !(aiQ(q) && (!aiHasIntent(q) || aiLowCoverage(q) || aiConstraint(q)))) return show(fb, 'predefined');
-    if (kb && kbStrong(q)) return show(kb, 'predefined');
-    aiAsk(q, kb || fb);
+    if (live) {
+      // The AI leads. The keyword template is only context for the AI, its buttons/course cards are shown under
+      // the reply, and it is the fallback if the AI is unavailable.
+      var fb = r || w.cbA(q), gen = !r && (String(fb).indexOf(w.AINOT) == 0 || String(fb).indexOf('Tell me your interest') == 0),
+        kb = gen ? w.kAnswer(q) : '';
+      return aiAsk(q, gen && kb ? kb : fb);
+    }
+    // No live AI configured: keyword templates as before.
+    if (r) return show(r, 'predefined');
+    var fb2 = w.cbA(q), gen2 = String(fb2).indexOf(w.AINOT) == 0 || String(fb2).indexOf('Tell me your interest') == 0,
+      kb2 = gen2 ? w.kAnswer(q) : '';
+    show(gen2 && kb2 ? kb2 : fb2, 'predefined');
   };
 
   // exposed for tests
   S.aiQ = aiQ; S.aiHasIntent = aiHasIntent; S.aiUncovered = aiUncovered; S.aiLowCoverage = aiLowCoverage; S.aiConstraint = aiConstraint; S.aiMd = aiMd; S.aiUrl = aiUrl; S.payload = payload;
+  S.aiGenR = aiGenR; S.kbStrong = kbStrong; S.cardsFrom = cardsFrom; S.handoffHtml = handoffHtml;
 })(window);

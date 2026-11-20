@@ -87,8 +87,8 @@ test('slide knowledge is in the chatbot knowledge base', async () => {
   ]) assert.match(s.w.kAnswer(q), re, q);
 });
 
-test('chatbot answers hardware and software questions for the course', async () => {
-  const s = await loadSite();
+test('chatbot answers hardware and software questions for the course (templates, AI off)', async () => {
+  const s = await loadSite({ chatApi: '' });
   s.open(); await sleep(30);
   const n = s.calls.length;
   await s.ask('What hardware do I need for this course?');
@@ -132,7 +132,7 @@ test('the live AI receives the course material (hardware, software, related slid
   assert.ok(m.relatedSlides.some((x) => /Module 9/.test(x)), 'VPN slides selected');
   assert.equal(m.modules.length, 10);
   const p = systemPrompt({ courseMaterial: m });
-  assert.match(p, /Official IT Network System Administrator course material/);
+  assert.match(p, /Official course material for the course in focus/);
   assert.match(p, /8 GB RAM/);
 });
 
