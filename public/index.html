@@ -513,8 +513,8 @@ ol.ai-steps li b{display:block;line-height:1.35}ol.ai-steps li span{display:bloc
 <section class="v" id="landing">
 <div class="lh" id="lh"><div class="w" style="z-index:2">
 <span class="gb">★ Industry-ready career training</span>
-<h1>Empowering your career in<br><span id="tw"></span><i class="cur"></i></h1>
-<p class="lp">Industry-focused training with live projects, expert mentors, and placement assistance.</p>
+<h1>Learn Skills. Build Careers.<br><span style="color:var(--brt)">Become Industry-Ready.</span></h1>
+<p class="lp">Gain practical experience through expert-led training, real-world projects, and 100% placement assistance.</p>
 <div style="margin-top:26px"><a class="gbtn" style="background:var(--br);color:#0a1224" onclick="nav('courses')">View courses →</a></div>
 </div></div>
 <div class="ls"><div><b class="ncrs">6</b><span>Courses</span></div><div><b>40–60</b><span>Hours of hands-on training</span></div><div><b>5+</b><span>Capstone projects per track</span></div><div><b>1:1</b><span>Placement guidance</span></div></div>
@@ -874,7 +874,7 @@ function route(){var h=(location.hash||"#landing").slice(1);if(!$(h))h="home";if
 $("q").oninput=render;addEventListener("hashchange",route);document.addEventListener("keydown",function(e){if(e.key=="Escape"){cl_()}});
 $("dep").innerHTML=[["💻","Technology"],["🎨","Design"],["📈","Business"],["🤖","AI"]].map(function(x){return '<div class="card cc" onclick="dep=\''+x[1]+'\';render();location.hash=\'courses\'"><div class="ico">'+x[0]+'</div><b>'+x[1]+'</b></div>'}).join("");
 var TW=['IT Network Administration','3D Modeling with LiDAR','AR/VR Development','Digital Twin','Cyber Security'],ti=0,tc=0,td=0,OE=new Date('2026-11-30T23:59:59+05:30');
-function tick(){var w=TW[ti];$('tw').textContent=w.slice(0,tc);if(!td&&tc<w.length){tc++;setTimeout(tick,90)}else if(!td){td=1;setTimeout(tick,1400)}else if(tc>0){tc--;setTimeout(tick,40)}else{td=0;ti=(ti+1)%TW.length;setTimeout(tick,300)}}
+function tick(){if(!$('tw'))return;var w=TW[ti];$('tw').textContent=w.slice(0,tc);if(!td&&tc<w.length){tc++;setTimeout(tick,90)}else if(!td){td=1;setTimeout(tick,1400)}else if(tc>0){tc--;setTimeout(tick,40)}else{td=0;ti=(ti+1)%TW.length;setTimeout(tick,300)}}
 function p2(n){return (n<10?'0':'')+n}
 function cdn(){if(!$('c1'))return;var s=Math.max(0,Math.floor((OE-new Date())/1000));$('c1').textContent=p2(Math.floor(s/86400));$('c2').textContent=p2(Math.floor(s%86400/3600));$('c3').textContent=p2(Math.floor(s%3600/60));$('c4').textContent=p2(s%60)}
 function gs(id){if(location.hash=="#landing"||!location.hash){$(id).scrollIntoView({behavior:"smooth"})}else{location.hash="landing";setTimeout(function(){$(id).scrollIntoView({behavior:"smooth"})},300)}}
