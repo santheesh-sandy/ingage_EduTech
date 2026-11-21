@@ -149,6 +149,9 @@
     7: { tech: ['Flutter SDK', 'Dart', 'Android Studio / VS Code', 'Provider (state management)', 'REST APIs, HTTP & JSON', 'Local storage (shared_preferences)'],
       why: 'Most people reach businesses through their phones. Startups, agencies, banks and shops need developers who can ship one app to both Android and iOS quickly, and Flutter is one of the most used tools for that.',
       apps: ['Shopping and food-delivery apps', 'Banking and payment apps', 'Learning and booking apps', 'Internal apps for field staff with camera and location'] },
+    8: { tech: ['EV motors & inverters', 'Power electronics (MOSFETs, boost converters)', 'Tinkercad circuit simulation', 'Charging standards (AC, DC, CCS2)', 'Battery management systems (SOC, SOH)', 'Smart charging & V2G'],
+      why: 'India is moving fast to electric two-wheelers, cars and buses. EV makers, battery companies and charging networks need technicians and engineers who understand motors, charging and battery safety.',
+      apps: ['Servicing electric scooters, cars and buses', 'Installing and maintaining charging stations', 'Testing and monitoring battery packs', 'Planning fleet charging for delivery and transport companies'] },
   };
   w.COURSE_INFO = COURSE_INFO;
   var PLACEMENT = {
@@ -249,7 +252,7 @@
   function sylGate(i) {
     var c = w.cf(i), D = sylData(c);
     w.cl_();
-    var four = !!(w.CAPS && w.CAPS[i]);
+    var four = !!(w.capList && w.capList(i).length);
     $('mb').innerHTML = '<div class="syl-gate"><span class="pill">STEP 1 OF ' + (four ? 4 : 3) + ' · REVIEW SYLLABUS</span><h2 style="margin-top:12px">' + esc(c.t) + '</h2>' +
       '<p class="sub" style="margin:0 0 6px">Please review what you will learn before you enroll.</p>' + sylSummary(c, D) + sylModsHtml(c, D, true) +
       '<div class="syl-go"><button class="btn pb" style="background:var(--br2)" onclick="sylContinue(' + i + ')"><span class="syl-lg">I’ve reviewed the syllabus · </span>Continue to enroll →</button>' +

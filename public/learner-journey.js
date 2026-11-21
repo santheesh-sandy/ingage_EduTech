@@ -16,8 +16,11 @@
   var STAGE = { resume: 30, intern: 50, career: 60, prep: 80, cert: 100 };
   w.STAGE = STAGE;
 
-  // mods: module numbers (1 = first module of the course) the project needs
-  var CAPS = {
+  // mods: module numbers (1 = first module of the course) the project needs.
+  // Other courses add theirs from their own file (cyber-course.js, mad-course.js, ev-course.js: w.CAPS[id] = [...]).
+  // A course with none gets 5 projects built from its own modules (capAuto below).
+  var CAPS = w.CAPS = w.CAPS || {};
+  Object.assign(CAPS, {
     1: [
       { id: 'office', e: '🏢', t: 'Small-office network with VLANs, DHCP and DNS', mods: [1, 2, 5, 4],
         brief: 'Design and build the network for a 3-department office in Cisco Packet Tracer, then prove it works with Wireshark.',
@@ -45,8 +48,7 @@
         tools: ['Ubuntu Linux', 'Apache / HTTP', 'FTP', 'Wireshark'],
         steps: ['Install Ubuntu in a VM and create users', 'Set folder permissions for a shared team folder', 'Install and test a web server', 'Set up an FTP share for the team', 'Capture HTTP and FTP sessions in Wireshark'] },
     ],
-  };
-  w.CAPS = CAPS;
+  });
 
   /* ---------- helpers ---------- */
   function enrolled(i) { return !!(w.US && w.myE()[i]); }
@@ -59,7 +61,34 @@
   /* =====================================================================
    *  1. CAPSTONES
    * ===================================================================== */
-  function capList(i) { var c = w.cf(i); return (c && (c.caps || CAPS[i])) || []; }
+  function capList(i) {
+    var c = w.cf(i); if (!c) return [];
+    var own = (c.caps && c.caps.length ? c.caps : CAPS[i]);
+    return own && own.length ? own : capAuto(c);
+  }
+  w.capList = capList;
+  // A course without its own capstones (for example one added later in the admin course editor) gets up to 5 projects,
+  // each built around one of its modules plus module 1. Write real ones in CAPS (or the course's file) when you can.
+  var AUTO = {};
+  function capAuto(c) {
+    var all = _mods(c), main = all.filter(function (m) { return !isStart(m) && !isCapMod(m); }), N = main.length;
+    if (N < 2) return [];
+    var key = c.i + ':' + main.map(function (m) { return m.t; }).join('|');
+    if (AUTO[c.i] && AUTO[c.i].key == key) return AUTO[c.i].list;
+    var count = Math.min(5, N - 1), first = main[0].t.replace(/^Module \d+:\s*/, ''), list = [], seen = {};
+    for (var k = 0; k < count; k++) {
+      var f = 1 + Math.round(k * (N - 2) / Math.max(1, count - 1)); // focus module index 1..N-1 (never module 1 itself)
+      if (seen[f]) continue; seen[f] = 1;
+      var t = main[f].t.replace(/^Module \d+:\s*/, '').replace(/\.$/, ''), mods = [1, f, f + 1].filter(function (x, j, a) { return x >= 1 && a.indexOf(x) == j; });
+      list.push({ id: 'auto' + (f + 1), e: c.e || '🛠️', t: 'Project: ' + t, mods: mods,
+        brief: 'Apply what you learn in “' + t + '” to build a small working project of your own, using the basics from “' + first + '”.',
+        out: ['A working project that applies ' + t.charAt(0).toLowerCase() + t.slice(1), 'A short report on your design, steps and results', 'A 5-minute demo you can show in interviews'],
+        tools: (c.k || []).slice(0, 4),
+        steps: ['Pick a small real-world problem for ' + t.toLowerCase(), 'Plan the parts and the steps', 'Build it using the module lessons', 'Test it and fix what does not work', 'Write a short report and prepare a demo'] });
+    }
+    AUTO[c.i] = { key: key, list: list };
+    return list;
+  }
   function capFind(i, id) { return capList(i).filter(function (x) { return x.id == id; })[0] || null; }
   function capOf(c) { var e = c && w.US && w.myE()[c.i]; return e && e.cap ? capFind(c.i, e.cap) : null; }
   w.capOf = capOf;

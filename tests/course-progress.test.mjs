@@ -26,13 +26,13 @@ const milestonePops = (seen) => seen.filter((o) => /^\d+% complete ·/.test(o.ti
 
 /* ---------- 2–6: course page sections ---------- */
 
-test('every course page has: learn (skills, technologies, topics), syllabus, capstones (networking), industry relevance, outcomes, careers, internship & 100% placement', async () => {
+test('every course page has: learn (skills, technologies, topics), syllabus, capstones, industry relevance, outcomes, careers, internship & 100% placement', async () => {
   const s = await loadSite();
   for (const c of s.w.cxVis()) {
     s.w.show(c.i); await sleep(50);
     const cv = s.w.$('cv');
     const ids = [...cv.querySelectorAll('.cx-left > .cx-sec, .cx-left > .syl')].map((e) => e.id);
-    const caps = c.i == 1 ? ['cx-capstones'] : [];
+    const caps = ['cx-capstones']; // every course has capstone projects (own or built from its modules)
     assert.deepEqual(ids, ['cx-learn', 'syl', ...caps, 'cx-industry', 'cx-outcomes', 'cx-careers', 'cx-placement'], `${c.t}: section order`);
     const learn = cv.querySelector('#cx-learn');
     assert.ok(learn.querySelectorAll('.cx-chips span').length >= 6, `${c.t}: skills + technologies`);

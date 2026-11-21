@@ -113,7 +113,7 @@ test('AI request payload is clean and complete', async () => {
   assert.equal(body.messages.at(-1).content, 'Is Python needed for AR VR?');
   for (const m of body.messages) assert.doesNotMatch(m.content, /<[a-z][^>]*>/i, 'no HTML sent to the AI');
   assert.ok(body.messages.length <= 12);
-  assert.equal(body.courses.length, 7);
+  assert.equal(body.courses.length, 8);
   assert.ok(body.courses[0].fee.includes('₹4,999'));
   assert.equal(body.courses[0].syllabus.length, 10, 'module list sent so the AI can answer syllabus questions');
   assert.equal(body.language, 'English');

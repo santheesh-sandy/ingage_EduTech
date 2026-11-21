@@ -94,6 +94,35 @@
       ['If an API call fails because there is no internet, the app should…', ['Close immediately', 'Show nothing', 'Delete saved data', 'Show a friendly message and the last saved data if it has any'], 3],
       ['Which file lists the packages (dependencies) a Flutter project uses?', ['main.dart', 'pubspec.yaml', 'build.gradle only', 'README.md'], 1]]],
   ];
+  // capstone projects (learner-journey.js): mods = module numbers the project needs
+  w.CAPS = w.CAPS || {};
+  w.CAPS[7] = [
+    { id: 'todo', e: '✅', t: 'To-do app with offline storage', mods: [1, 2, 3, 4, 6],
+      brief: 'Build a to-do app that keeps working without internet and remembers tasks after the app is closed.',
+      out: ['Add, edit, complete and delete tasks', 'Tasks saved on the device and loaded on start', 'Clean state management with Provider'],
+      tools: ['Flutter', 'Dart', 'Provider', 'shared_preferences'],
+      steps: ['Sketch the screens', 'Build the task list and form', 'Manage the tasks with Provider', 'Save and load tasks on the device', 'Polish the UI and test edge cases'] },
+    { id: 'news', e: '📰', t: 'News reader app using a public API', mods: [1, 2, 3, 6, 9],
+      brief: 'Show the latest headlines from a free public API, with loading, error and offline states.',
+      out: ['Headlines loaded from a REST API and parsed from JSON', 'Clear loading, error and retry screens', 'The last headlines shown when offline'],
+      tools: ['Flutter', 'http package', 'JSON', 'FutureBuilder'],
+      steps: ['Pick a free news API and read its docs', 'Fetch and parse the JSON', 'Build the list and detail screens', 'Handle errors and no internet', 'Cache the last result on the device'] },
+    { id: 'shop', e: '🛒', t: 'Shopping app with a cart', mods: [2, 4, 5, 7],
+      brief: 'Build a small shop: product list, product page and a cart that updates everywhere.',
+      out: ['Product list and detail screens with navigation', 'A cart shared across screens with Provider', 'A themed, animated checkout flow'],
+      tools: ['Flutter', 'Provider', 'Navigator', 'ThemeData'],
+      steps: ['Create sample products', 'Build the list and detail screens', 'Add the cart with Provider', 'Add theming and small animations', 'Test the full checkout flow'] },
+    { id: 'trip', e: '📍', t: 'Travel log app with camera and location', mods: [2, 3, 5, 8],
+      brief: 'Let a user save places they visit with a photo and their location.',
+      out: ['Take or pick a photo for each entry', 'Save the GPS location with each entry', 'Permission handling that explains why it is needed'],
+      tools: ['Flutter', 'camera / image_picker', 'geolocator', 'Permissions'],
+      steps: ['Plan the screens and data', 'Add camera or gallery photos', 'Read the location with permission', 'List entries with photo and place', 'Handle denied permissions politely'] },
+    { id: 'weather', e: '🌦️', t: 'Weather app with themes and animations', mods: [3, 6, 7, 10],
+      brief: 'Show the weather for a city from an API, with a light and dark theme and smooth animations.',
+      out: ['Weather data from an API for any city', 'Light and dark themes', 'Animated weather cards and transitions'],
+      tools: ['Flutter', 'http', 'ThemeData', 'Animations'],
+      steps: ['Choose a free weather API', 'Fetch and show the forecast', 'Add a city search', 'Add themes and animations', 'Handle errors and offline use'] },
+  ];
   w.MAD_CUR = M.map(function (m, i) {
     var k = i + 1, ls = m[1].map(function (p, j) {
       return { u: 'm' + k + 's' + (j + 1), ty: 'doc', t: 'PPT ' + (j + 1) + ': ' + p[1], du: '', url: BASE + 'Slides/' + s3enc(p[0]) + '.pptx', tx: '' };

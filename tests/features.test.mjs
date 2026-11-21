@@ -84,7 +84,8 @@ test('opening a module of the inline syllabus counts as reviewed (just rendering
   s.w.cl_();
   const c = s.w.cf(6); c.soon = 0; // pretend course 6 is open
   s.w.enroll(6); await sleep(20);
-  assert.ok(!s.w.$('mo').classList.contains('on'), 'reviewed course goes straight on');
+  assert.ok(!s.w.$('mb').querySelector('.syl-gate'), 'reviewed course skips the syllabus step');
+  assert.ok(s.w.$('mb').querySelector('.cap-pick'), '…and goes on to choosing a capstone');
 });
 
 test('enrolled learners and coming-soon courses are not blocked', async () => {

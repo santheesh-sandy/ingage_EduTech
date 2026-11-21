@@ -121,6 +121,35 @@
       ['Which is the first phase of the incident response lifecycle?', ['Containment', 'Recovery', 'Lessons learned', 'Preparation'], 3],
       ['Isolating an infected VM (instead of deleting it) happens in which phase?', ['Eradication', 'Containment', 'Preparation', 'Identification'], 1]]],
   ];
+  // capstone projects (learner-journey.js): mods = module numbers the project needs
+  w.CAPS = w.CAPS || {};
+  w.CAPS[6] = [
+    { id: 'phish', e: '🎣', t: 'Phishing investigation and email defence report', mods: [1, 2, 6],
+      brief: 'Investigate a suspicious email from start to finish and write the report a SOC team would send.',
+      out: ['An email header analysis (SPF, DKIM, DMARC) with your verdict', 'A list of indicators of compromise to block', 'An awareness and MFA checklist for staff'],
+      tools: ['Email headers', 'Threat intelligence lookups', 'MFA'],
+      steps: ['Collect the email and its full headers', 'Check SPF, DKIM and DMARC results', 'Look up the links and sender in threat intelligence', 'List the IoCs and the blocking steps', 'Write the report and a staff checklist'] },
+    { id: 'secnet', e: '🔥', t: 'Secure small-office network with firewall and VPN', mods: [3, 4, 5],
+      brief: 'Build a small-office network in Cisco Packet Tracer with security zones, firewall rules, secure Wi-Fi and a VPN.',
+      out: ['A network split into internal, DMZ and guest zones', 'Firewall rules with implicit deny, tested and documented', 'WPA2/WPA3 wireless and a working VPN for remote staff'],
+      tools: ['Cisco Packet Tracer', 'ASA firewall', 'VPN', 'Wireless security'],
+      steps: ['Draw the topology and the security zones', 'Configure the firewall rules and the DMZ', 'Secure the wireless network', 'Set up the VPN and test it', 'Document every rule and why it exists'] },
+    { id: 'soc', e: '📊', t: 'Mini SOC: traffic monitoring dashboard', mods: [3, 6, 8],
+      brief: 'Capture network traffic, build a dashboard of what is normal, and flag what is not.',
+      out: ['Packet captures with a summary of normal traffic', 'A dashboard of top talkers, ports and protocols', 'Three alerts with what triggered them and the response'],
+      tools: ['Wireshark', 'Traffic analytics dashboard', 'IDS/IPS basics'],
+      steps: ['Capture traffic in the lab', 'Summarise normal ports and protocols', 'Build the dashboard', 'Run a port scan and spot it in the data', 'Write the alert and response notes'] },
+    { id: 'vuln', e: '🛠️', t: 'Vulnerability assessment of a test lab', mods: [3, 7, 8],
+      brief: 'Scan a test lab for open ports and weaknesses, rank the risks and recommend fixes.',
+      out: ['An Nmap scan of the lab with open, closed and filtered ports', 'Findings mapped to the OWASP Top 10 where they apply', 'A prioritised fix list with encryption and hardening advice'],
+      tools: ['Nmap', 'OWASP Top 10', 'CyberChef'],
+      steps: ['Agree the scope of the test lab', 'Run the port and service scan', 'Check findings against OWASP and known issues', 'Rank each risk by impact and likelihood', 'Write the report with fixes'] },
+    { id: 'ir', e: '🚨', t: 'Integrated incident response and forensics', mods: [1, 6, 9, 10],
+      brief: 'Handle a simulated malware incident end to end: detect, contain, investigate and report.',
+      out: ['An incident timeline from the logs and evidence', 'Containment and eradication steps you carried out', 'A final incident report with lessons learned'],
+      tools: ['SIEM basics', 'Forensic tools', 'Incident response lifecycle'],
+      steps: ['Spot the alert and confirm the incident', 'Contain the affected machine', 'Collect evidence and analyse the malware safely', 'Remove the threat and recover', 'Write the report and lessons learned'] },
+  ];
   w.CYBER_CUR = M.map(function (m, i) {
     var k = i + 1, ls = [];
     m[1].forEach(function (p, j) {
