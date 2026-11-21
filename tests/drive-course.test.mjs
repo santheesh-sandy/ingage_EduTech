@@ -35,31 +35,41 @@ test('every slide deck and video lesson maps to a Google Drive file, and every D
   for (const id of Object.values(DM.slides).flat().concat(Object.values(DM.videos).map((v) => v[0]))) assert.match(id, /^[\w-]{25,}$/);
 });
 
-test('a slide lesson shows the PDF from Drive with full-screen and PPT download links', async () => {
+test('a slide lesson shows the PDF from S3 with full-screen and PPT download links', async () => {
   const s = await learner();
   const l = lessons(s.w).find((x) => x.pp && x.pp.includes('M7-2'));
   const lw = await open(s, l);
   const f = lw.querySelector('.pv iframe');
-  assert.equal(f.getAttribute('src'), 'https://drive.google.com/file/d/1T-K70LVKkVhuhxqNdlbISGkkOEbo1Icw/preview');
+  assert.equal(f.getAttribute('src'), 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/pdf/M7-2.pdf#view=FitH');
   const links = [...lw.querySelectorAll('.pvb a')].map((a) => [text(a), a.getAttribute('href')]);
   assert.deepEqual(links, [
-    ['⤢ Full screen', 'https://drive.google.com/file/d/1T-K70LVKkVhuhxqNdlbISGkkOEbo1Icw/view'],
-    ['⬇ Download PPT', 'https://drive.google.com/uc?export=download&id=1qj3dtNnAlN_2fucp4UMQieEeWnCu5rWj'],
+    ['⤢ Full screen', 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/pdf/M7-2.pdf'],
+    ['⬇ Download PPT', 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/M7-2.pptx'],
   ]);
+  s.w.LTAB = 'res'; s.w.renderLearn(); await sleep(20);
+  assert.equal(s.w.$('lw').querySelector('.utc a[href*="M7-2"]').getAttribute('href'), 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/M7-2.pptx', 'Resources tab too');
   assert.deepEqual(s.errors, []);
 });
 
-test('a video lesson plays from Drive (both parts of a two-part lesson)', async () => {
+test('a video lesson plays from S3 (both parts of a two-part lesson); a video missing on S3 falls back to Drive', async () => {
   const s = await learner();
   const l = lessons(s.w).find((x) => Array.isArray(x.v) && x.v.length == 2);
   const lw = await open(s, l);
-  assert.equal(lw.querySelectorAll('video.uv').length, 0, 'no local <video> left');
-  const fr = [...lw.querySelectorAll('.dv iframe')].map((f) => f.getAttribute('src'));
-  assert.deepEqual(fr, ['https://drive.google.com/file/d/1NRhMlMShfPZ5Z5l7K8ehf8jhPSnjVFly/preview', 'https://drive.google.com/file/d/1tIHxrJAkAs1BGdf_4Omg3s-ypMYRZejB/preview']);
-  assert.match(text(lw), /🎬 Static routing · from Google Drive/);
+  const v = [...lw.querySelectorAll('video.uv')];
+  assert.deepEqual(v.map((x) => x.getAttribute('src')), ['https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/4-static-routing.mp4', 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/Video-5+Static+continue+and+Dynamic+routing(Task+no_2).mp4']);
   assert.deepEqual([...lw.querySelectorAll('h4')].map(text).filter((t) => /^Part/.test(t)), ['Part 1 of 2: Static routing', 'Part 2 of 2: Static (continued) and dynamic routing']);
+  // part 1 is not on S3 → Google Drive player
+  v[0].dispatchEvent(new s.w.Event('error'));
+  assert.equal(lw.querySelector('.dv iframe').getAttribute('src'), 'https://drive.google.com/file/d/1NRhMlMShfPZ5Z5l7K8ehf8jhPSnjVFly/preview');
+  assert.equal(lw.querySelectorAll('video.uv').length, 1, 'part 2 still plays from S3');
   assert.ok([...lw.querySelectorAll('button')].some((b) => /Mark complete/.test(b.textContent)), 'learner can mark it complete');
   assert.ok(!/Video not found/.test(text(lw)));
+});
+
+test('file names with spaces, commas and ".mp4" in them map to their S3 address', async () => {
+  const s = await loadSite();
+  assert.equal(s.w.DRIVE_MEDIA.s3Video('videos/Video-10 DHCP,DNS(Task no_6)'), 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/Video-10+DHCP%2CDNS(Task+no_6).mp4');
+  assert.equal(s.w.DRIVE_MEDIA.s3Video('videos/video 23-DHCP service Configuration(Task no -16).mp4'), 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/video+23-DHCP+service+Configuration(Task+no+-16).mp4.mp4');
 });
 
 test('turning Drive off keeps the local files (slides/…, videos/…)', async () => {

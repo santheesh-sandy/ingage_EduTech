@@ -1,13 +1,18 @@
-/* ingage EduTech – course slides and videos served from Google Drive
- * Slides:  https://drive.google.com/drive/folders/1nHlmdKS4JG8qha2oZE8uQ81uNbpjILp1  (PPTX + pdf/ subfolder)
- * Videos:  https://drive.google.com/drive/folders/1rgQHxH3ty9FciwXc7lhAHVOdHt9-V-Ko
- * The files must be shared as "Anyone with the link – Viewer" so learners can open them.
+/* ingage EduTech – course slides and videos
+ * Main source: Amazon S3 (bucket ingage-lms, ap-south-1), same folder layout as the local files:
+ *   <s3>/slides/M1-1.pptx   <s3>/slides/pdf/M1-1.pdf   <s3>/videos/<video name>.mp4
+ *   where <s3> = https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/
+ *   Video names are the lesson's video path (MD in index.html) + ".mp4".
+ * Fallback: Google Drive (ids below), used for any video that S3 does not have.
+ *   Slides:  https://drive.google.com/drive/folders/1nHlmdKS4JG8qha2oZE8uQ81uNbpjILp1  (PPTX + pdf/ subfolder)
+ *   Videos:  https://drive.google.com/drive/folders/1rgQHxH3ty9FciwXc7lhAHVOdHt9-V-Ko
  * To use files hosted next to index.html instead (slides/…, videos/…), set DRIVE_MEDIA.on = false.
  */
 (function (w, d) {
   'use strict';
   var DM = (w.DRIVE_MEDIA = {
     on: true,
+    s3: 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/',
     // deck id → [PPTX file id, PDF file id]
     slides: {
       'M1-1': ['1rBOBCebSgcr550YKilX-zsq0mttRFJ-9', '1tMm-Os3oo6Qpf8L1xEV82_zxn9SNGy0p'],
@@ -80,32 +85,52 @@
   DM.slideIds = function (path) { var k = DM.deckOf(path); return k && DM.slides[k]; };
   DM.videoOf = function (path) { var n = DM.vidNo(path); return n != null ? DM.videos[n] : null; };
 
+  // S3 addresses: spaces become "+", everything else is URL-encoded
+  function s3enc(p) { return String(p).split('/').map(function (s) { return encodeURIComponent(s).replace(/%20/g, '+'); }).join('/'); }
+  DM.s3Slide = function (deck, pdf) { return DM.s3 + (pdf ? 'slides/pdf/' + deck + '.pdf' : 'slides/' + deck + '.pptx'); };
+  DM.s3Video = function (path) { return DM.s3 + s3enc(path) + '.mp4'; }; // e.g. videos/1-cisco-packet-tracer → …/videos/1-cisco-packet-tracer.mp4
+  function newTab(a) { a.removeAttribute('download'); a.target = '_blank'; a.rel = 'noopener'; }
+
   function esc(s) { return w.esc(String(s)); }
 
-  // Replace local slide/video players in the learning page with Google Drive players.
+  // Point the learning page's slide viewer, slide links and videos at S3.
   function apply() {
     if (!DM.on) return;
     var lw = w.$('lw');
     if (!lw) return;
     lw.querySelectorAll('.pv iframe').forEach(function (f) {
-      var ids = DM.slideIds(f.getAttribute('src'));
-      if (!ids) return;
-      f.src = DM.preview(ids[1]);
+      var k = DM.deckOf(f.getAttribute('src'));
+      if (!k) return;
+      f.src = DM.s3Slide(k, 1) + '#view=FitH';
       f.setAttribute('allow', 'fullscreen');
       f.setAttribute('loading', 'lazy');
       var bar = f.closest('.pv').nextElementSibling;
       if (bar && bar.classList.contains('pvb')) {
         bar.querySelectorAll('a').forEach(function (a) {
-          if (/Full screen/i.test(a.textContent)) a.href = DM.view(ids[1]);
-          if (/Download/i.test(a.textContent)) { a.href = DM.download(ids[0]); a.removeAttribute('download'); a.target = '_blank'; a.rel = 'noopener'; }
+          if (/Full screen/i.test(a.textContent)) a.href = DM.s3Slide(k, 1);
+          if (/Download/i.test(a.textContent)) { a.href = DM.s3Slide(k); newTab(a); }
         });
-        var meta = bar.querySelector('.meta');
-        if (meta) meta.textContent = meta.textContent.replace('scroll inside the viewer', 'scroll inside the viewer · from Google Drive');
       }
     });
+    // any other link to a local deck (Resources tab "Download PPT")
+    lw.querySelectorAll('a[href^="slides/"]').forEach(function (a) {
+      var k = DM.deckOf(a.getAttribute('href'));
+      if (k) { a.href = DM.s3Slide(k, /\.pdf$/i.test(a.getAttribute('href'))); newTab(a); }
+    });
     lw.querySelectorAll('video.uv').forEach(function (v) {
-      var hit = DM.videoOf(v.getAttribute('data-p'));
-      if (!hit) return;
+      var p = v.getAttribute('data-p');
+      v.removeAttribute('onerror');
+      v.onerror = function () { driveBox(v); }; // not on S3 → Google Drive player
+      v.src = DM.s3Video(p);
+      var hit = DM.videoOf(p), hd = v.previousElementSibling; // readable part titles ("Part 1 of 2: Static routing")
+      if (hit && hd && hd.tagName == 'H4' && /^Part \d+ of \d+:/.test(hd.textContent)) hd.textContent = hd.textContent.replace(/:.*$/, ': ' + hit[1]);
+    });
+  }
+  function driveBox(v) {
+    var hit = DM.videoOf(v.getAttribute('data-p'));
+    if (!v.parentNode) return;
+    if (!hit) { if (w.vidMiss) { v.setAttribute('data-t', '99'); w.vidMiss(v); } return; }
+    {
       var box = d.createElement('div');
       box.className = 'dv';
       box.innerHTML = '<iframe src="' + DM.preview(hit[0]) + '" title="' + esc('Video ' + DM.vidNo(v.getAttribute('data-p')) + ': ' + hit[1]) +
@@ -116,7 +141,7 @@
       var hd = v.previousElementSibling;
       if (hd && hd.tagName == 'H4' && /^Part \d+ of \d+:/.test(hd.textContent)) hd.textContent = hd.textContent.replace(/:.*$/, ': ' + hit[1]);
       v.parentNode.replaceChild(box, v);
-    });
+    }
   }
   DM.apply = apply;
   var _renderLearn = w.renderLearn;

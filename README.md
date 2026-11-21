@@ -48,14 +48,16 @@ tests/                  85 automated tests (node:test + jsdom)
 sideways scrolling, content running off screen, and headings that don't line up with the logo.
 Run `npm start`, then `pip install playwright && playwright install chromium && python3 scripts/check_layout.py`.
 
-## Course slides & videos (Google Drive)
+## Course slides & videos (Amazon S3)
 
-`public/drive-media.js` maps every lesson of *IT Network System Administrator* to your Drive files:
-30 slide decks (shown as PDF, with *Download PPT*) and 25 lab videos (played in Drive's player).
-- Drive folders: slides `1nHlmdKS4JG8qha2oZE8uQ81uNbpjILp1`, videos `1rgQHxH3ty9FciwXc7lhAHVOdHt9-V-Ko`
-- Keep the files shared as **Anyone with the link → Viewer**, otherwise learners see a sign-in page.
-- A new or replaced file in Drive gets a new ID: update it in `DRIVE_MEDIA.slides` / `DRIVE_MEDIA.videos`.
-- To host the files yourself instead, put them in `public/slides/`, `public/slides/pdf/`, `public/videos/` and set `DRIVE_MEDIA.on = false`.
+`public/drive-media.js` loads every lesson of *IT Network System Administrator* from the S3 bucket `ingage-lms` (ap-south-1),
+folder `IT Network System Administrator/`:
+- Slides: `slides/M1-1.pptx` (*Download PPT*) and `slides/pdf/M1-1.pdf` (shown in the lesson viewer), 30 decks.
+- Videos: `videos/<the lesson's video path in MD>.mp4`, played in the site's own player (so watching to the end marks the step complete).
+- Files must stay publicly readable. To move the files, change `DRIVE_MEDIA.s3`.
+- A video that S3 doesn't have falls back to the Google Drive copy (`DRIVE_MEDIA.videos`). Today that is only
+  video 4 (*Static routing*): upload it to S3 as `videos/4-static-routing.mp4` and it is used automatically.
+- To host the files next to `index.html` instead (`public/slides/`, `public/slides/pdf/`, `public/videos/`), set `DRIVE_MEDIA.on = false`.
 
 The chatbot's course knowledge (`public/course-knowledge.js`) was written from the text of all 30 decks:
 key facts per module, all software (with system requirements) and the lab PC hardware spec.
