@@ -51,9 +51,18 @@ test('Enroll now first shows the syllabus review, then continues to sign in', as
   assert.equal(s.w.$('mb').querySelectorAll('.syl-m').length, s.w.$('cv').querySelectorAll('#syl .syl-m').length);
   assert.ok(!s.w.$('lo').classList.contains('on'), 'login not shown yet');
   assert.ok(s.w.document.body.classList.contains('has-ov'), 'chat button switches to compact mode over dialogs');
+  assert.match(text(s.w.$('mb')), /STEP 1 OF 4.*Next: 2 Choose capstone → 3 Sign in/);
   s.w.eval(s.w.$('mb').querySelector('.syl-go .btn').getAttribute('onclick')); await sleep(30);
-  assert.ok(!mo.classList.contains('on'), 'review closed');
-  assert.ok(s.w.$('lo').classList.contains('on'), 'login shown (step 2)');
+  // step 2: choose a capstone project
+  assert.ok(mo.classList.contains('on') && s.w.$('mb').querySelector('.cap-pick'), 'capstone picker open');
+  assert.equal(s.w.$('mb').querySelectorAll('.cap-card').length, 5);
+  assert.ok(s.w.$('mb').querySelector('.syl-go .btn').disabled, 'cannot continue without a project');
+  s.w.$('mb').querySelectorAll('.cap-card')[2].click(); await sleep(20);
+  assert.ok(s.w.$('mb').querySelector('.cap-tree'), 'learning path shown');
+  s.w.eval(s.w.$('mb').querySelector('.syl-go .btn').getAttribute('onclick')); await sleep(30);
+  assert.ok(!mo.classList.contains('on'), 'picker closed');
+  assert.ok(s.w.$('lo').classList.contains('on'), 'login shown (step 3)');
+  assert.equal(s.w.capPick(1), 'domain', 'choice kept for checkout');
   assert.equal(s.w.PEND, 1, 'enrollment continues after login');
   // second time in the same visit: straight to login
   s.w.cl_(); await sleep(20);
@@ -107,7 +116,7 @@ test('internship page: nav link, overview, facts, steps, roles, tracks, module u
   assert.ok(a.classList.contains('on'), 'nav link highlighted');
   const t = text(sec);
   for (const x of ['Internship & Placement Program', '100% Placement Assistance', 'Typically 3 months', 'How it works', 'Open internship roles', 'Network Support Intern',
-    'Internship tracks by course', 'Cyber Security Essentials', 'What each module unlocks', 'Module 10', 'What you gain', 'Frequently asked questions',
+    'Internship tracks by course', 'Cyber Security Essentials', 'What each milestone unlocks', 'Placement preparation', 'What you gain', 'Frequently asked questions',
     'Is the internship paid?', '+91 99416 56492', 'Log in and enroll']) assert.ok(t.includes(x), x);
   assert.equal(sec.querySelectorAll('.ip-steps li').length, 6);
   assert.equal(sec.querySelectorAll('.ip-faq details').length, s.w.INTERN.faq.length);
@@ -123,7 +132,7 @@ test('internship page shows the logged-in learner their status', async () => {
   const st = text(s.w.$('internship').querySelector('.ip-status'));
   assert.match(st, /Your internship recommendations/);
   assert.match(st, /0% complete/);
-  assert.match(st, /Next unlock: Complete Module 1/);
+  assert.match(st, /Next unlock: Reach 50% course progress/);
 });
 
 test('navigating to the internship page from anywhere works, and back', async () => {

@@ -57,6 +57,7 @@
   function seenKey(i) { return 'sf_syl_' + i; }
   function sylSeen(i) { try { return sessionStorage.getItem(seenKey(i)) == '1'; } catch (e) { return !!w['_syl' + i]; } }
   function sylMark(i) { try { sessionStorage.setItem(seenKey(i), '1'); } catch (e) { w['_syl' + i] = 1; } }
+  w.sylSeen = sylSeen;
   function enrolled(i) { return !!(w.US && w.myE()[i]); }
   function closeChatOnPhone() { if (innerWidth <= 560 && $('cbp').classList.contains('open')) w.cbT(); }
 
@@ -64,7 +65,7 @@
    *  1. SYLLABUS
    * ===================================================================== */
   function sylData(c) {
-    var ms = w.mods(c).filter(function (m) { return !/^start here/i.test(m.t); });
+    var ms = (w.modsAll || w.mods)(c).filter(function (m) { return !/^start here/i.test(m.t); }); // the full course, not one capstone's path
     return ms.map(function (m) {
       return {
         t: m.t.replace(/^Module \d+:\s*/, ''),
@@ -177,7 +178,8 @@
   function courseLeft(c) {
     var I = COURSE_INFO[c.i] || { tech: c.k || [], why: '', apps: [] }, D = sylData(c), st = sylStats(c, D), jr = c.jr || [], fr = freshRange(c);
     var topics = D.filter(function (m) { return !m.cap; }).map(function (m) { return m.t; });
-    var nav = [['learn', 'Learn'], ['syl', 'Syllabus'], ['industry', 'Industry'], ['outcomes', 'Outcomes'], ['careers', 'Careers'], ['placement', 'Placement']];
+    var caps = w.capSectionHtml ? w.capSectionHtml(c) : '';
+    var nav = [['learn', 'Learn'], ['syl', 'Syllabus']].concat(caps ? [['capstones', 'Capstones']] : [], [['industry', 'Industry'], ['outcomes', 'Outcomes'], ['careers', 'Careers'], ['placement', 'Placement']]);
     return w.demo(c) +
       '<div class="cx-nav" role="navigation" aria-label="Course sections">' + nav.map(function (x) { return '<a onclick="cxGo(\'' + x[0] + '\')">' + x[1] + '</a>'; }).join('') + '</div>' +
       sec('learn', '🎯', 'What You’ll Learn', 'The skills, technologies and topics this course covers.',
@@ -185,7 +187,7 @@
         '<div class="cx-grid3"><div><b class="cx-h">Skills</b>' + chips(c.k || []) +
         '<b class="cx-h" style="margin-top:14px">Technologies & tools</b>' + chips(I.tech, 'tech') + '</div>' +
         '<div><b class="cx-h">Topics covered</b><ol class="cx-topics">' + topics.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol></div></div>') +
-      sylHtml(c) +
+      sylHtml(c) + caps +
       (I.why ? sec('industry', '🏭', 'Industry Relevance', '',
         '<p class="cx-why">' + esc(I.why) + '</p>' +
         '<div class="cx-2"><div class="cx-box"><b class="cx-h">Real-world applications</b><ul class="ck">' + w.li(I.apps.map(esc)) + '</ul></div>' +
@@ -217,7 +219,7 @@
     var link = '<div class="syl-link" onclick="sylGo()">📄 Review the syllabus · ' + s.mods + ' modules, ' + s.lessons + ' lessons</div>';
     if (c.soon && !enrolled(i)) h = h.replace('<label>Get notified</label>', function (x) { return link + x; });
     else h = h.replace(/(<button class="btn pb"[^>]*onclick="enroll\()/, function (x) { return (w.progCard ? w.progCard(i) : '') + link + x; });
-    var ip = '<div class="card ip-card"><b>🚀 Internship & placement</b><p class="meta" style="margin:6px 0 8px"><b>100% placement assistance</b>. Finish modules and their MCQ tests to unlock internships' +
+    var ip = '<div class="card ip-card"><b>🚀 Internship & placement</b><p class="meta" style="margin:6px 0 8px"><b>100% placement assistance</b>. Reach 50% course progress to unlock internships' +
       ((c.jr || []).length ? ' such as <b>' + c.jr.slice(0, 2).map(esc).join('</b> and <b>') + '</b>' : '') + '.</p><a class="lk" onclick="nav(\'internship\')">View internship details →</a></div>';
     return h.replace(/<\/div><\/div>$/, function () { return ip + '</div></div>'; });
   }
@@ -244,10 +246,11 @@
   function sylGate(i) {
     var c = w.cf(i), D = sylData(c);
     w.cl_();
-    $('mb').innerHTML = '<div class="syl-gate"><span class="pill">STEP 1 OF 3 · REVIEW SYLLABUS</span><h2 style="margin-top:12px">' + esc(c.t) + '</h2>' +
+    var four = !!(w.CAPS && w.CAPS[i]);
+    $('mb').innerHTML = '<div class="syl-gate"><span class="pill">STEP 1 OF ' + (four ? 4 : 3) + ' · REVIEW SYLLABUS</span><h2 style="margin-top:12px">' + esc(c.t) + '</h2>' +
       '<p class="sub" style="margin:0 0 6px">Please review what you will learn before you enroll.</p>' + sylSummary(c, D) + sylModsHtml(c, D, true) +
       '<div class="syl-go"><button class="btn pb" style="background:var(--br2)" onclick="sylContinue(' + i + ')"><span class="syl-lg">I’ve reviewed the syllabus · </span>Continue to enroll →</button>' +
-      '<button class="syl-btn" type="button" onclick="sylPrint(' + i + ')">⬇ Download</button><span class="meta" style="font-size:12.5px">Next: 2 Sign in / Sign up → 3 Pay</span></div></div>';
+      '<button class="syl-btn" type="button" onclick="sylPrint(' + i + ')">⬇ Download</button><span class="meta" style="font-size:12.5px">' + (four ? 'Next: 2 Choose capstone → 3 Sign in / Sign up → 4 Pay' : 'Next: 2 Sign in / Sign up → 3 Pay') + '</span></div></div>';
     $('mo').classList.add('on');
   }
   w.sylContinue = function (i) { sylMark(i); w.cl_(); w.enroll(i); };
@@ -264,7 +267,12 @@
   function internRoles() {
     return w.JOBS.map(function (j, i) { return [j, i]; }).filter(function (x) { return w.jobOn(x[1]) && /intern|trainee/i.test(x[0][0] + ' ' + x[0][1]); });
   }
-  function moduleUnlocks() { // course 1: which module unlocks which roles
+  function moduleUnlocks() { // what each progress milestone unlocks (learner-journey.js)
+    var S = w.STAGE;
+    if (S) return '<h2>What each milestone unlocks</h2><p class="sub">Your course progress in My Learning unlocks each career step.</p><div style="overflow-x:auto"><table class="ip-tbl"><tr><th>Progress</th><th>Unlocks</th></tr>' +
+      [[S.resume, '📄 Resume builder, filled in from the resume you uploaded'], [S.intern, '🧑‍💻 Internship opportunities'], [S.career, '💼 Career opportunities (full-time roles)'],
+        [S.prep, '🎯 Placement preparation: checklist, interview questions, mock interviews'], [S.cert, '🎓 Course completion certificate']]
+        .map(function (r) { return '<tr><td><b>' + r[0] + '%</b></td><td>' + r[1] + '</td></tr>'; }).join('') + '</table></div>';
     if (!w.JR || !w.MD) return '';
     var rows = w.MD.map(function (m, n) {
       var ids = (w.JR[n + 1] || []).filter(w.jobOn);
@@ -279,7 +287,7 @@
     var ids = w.hEligIds() || [];
     return '<div class="card ip-status"><b>Your internship status</b>' + w.hProg() +
       (ids.length ? '<p style="margin:10px 0 6px">🎉 You are eligible for:</p><ul class="ck">' + ids.map(function (i) { return '<li><b>' + esc(w.JOBS[i][0]) + '</b> <span class="meta">· ' + esc(w.JOBS[i][1]) + '</span></li>'; }).join('') + '</ul><a class="btn pb" onclick="nav(\'next\')">Apply in Career →</a>'
-        : '<p class="meta" style="margin:8px 0 10px">Complete a module and pass its MCQ test to unlock your first internship roles.</p><a class="btn" onclick="nav(\'learn\')">Continue learning →</a>') + '</div>';
+        : '<p class="meta" style="margin:8px 0 10px">Reach 50% course progress to unlock internship opportunities.</p><a class="btn" onclick="nav(\'learn\')">Continue learning →</a>') + '</div>';
   }
   function internHtml() {
     var I = INTERN, roles = internRoles(), V = w.cxVis();

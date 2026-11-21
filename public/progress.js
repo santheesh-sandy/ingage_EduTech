@@ -1,6 +1,6 @@
 /* ingage EduTech – learner progress
  *  7. Course completion % with milestone markers and automatic congratulations (30%, 50%, 60%, 80%, 100%)
- *  8. Internship recommendations based on course progress
+ *  8. Internship recommendations based on course progress (internships at 50%, career roles at 60%)
  *  9. Chatbot answers about progress and recommended internships (+ context for the live AI)
  * Loaded after site-features.js.
  */
@@ -10,12 +10,11 @@
 
   /* ===== settings you can edit ===== */
   var MILESTONES = [30, 50, 60, 80, 100];          // congratulate when a learner reaches these %
-  var TRACK_UNLOCK = [30, 60, 100];                 // courses without a module→job map: internship tracks unlock at these %
   var MS_TEXT = {
-    30: ['Great start!', 'You have completed 30% of {c}. Keep the momentum going.'],
-    50: ['Halfway there!', 'You are 50% through {c}. Your hard work is paying off.'],
-    60: ['60% complete!', 'You have finished most of the core modules of {c}.'],
-    80: ['Almost there!', 'Only 20% of {c} left. Finish strong to unlock everything.'],
+    30: ['Great start!', 'You have completed 30% of {c}. Your Resume builder is unlocked.'],
+    50: ['Halfway there!', 'You are 50% through {c}. Internship opportunities are unlocked.'],
+    60: ['60% complete!', 'Career opportunities in {c} are unlocked.'],
+    80: ['Almost there!', 'Placement preparation is unlocked. Finish {c} to get your certificate.'],
     100: ['Course complete!', 'You finished {c}. Get your certificate and apply for internships.'],
   };
   w.MILESTONES = MILESTONES;
@@ -29,26 +28,20 @@
   w.prog = prog;
 
   /* ---------- internship recommendations ---------- */
-  // Networking course: each module unlocks job-board roles (JR). Other courses: internship tracks unlock at TRACK_UNLOCK %.
+  // Internships unlock at STAGE.intern (50%), full-time career roles at STAGE.career (60%) – see learner-journey.js
   function recIntern(ci) {
-    var c = w.cf(ci), e = w.US && w.myE()[ci], P = prog(ci), elig = [], next = null;
+    var c = w.cf(ci), e = w.US && w.myE()[ci], P = prog(ci), elig = [], next = null, S = w.STAGE || { intern: 50, career: 60 };
     if (!c || !e) return { eligible: [], next: null, pct: 0 };
-    if (ci == 1 && w.JR) {
-      var seen = {};
-      w.mods(c).forEach(function (m) {
-        if (m.mi == null) return;
-        var done = m.ls.every(function (l) { return e.done.indexOf(l.id) > -1; }), ids = (w.JR[m.mi + 1] || []).filter(w.jobOn);
-        if (done) ids.forEach(function (i) { if (!seen[i]) { seen[i] = 1; elig.push({ t: w.JOBS[i][0], ty: w.JOBS[i][1], intern: /intern|trainee/i.test(w.JOBS[i][0] + w.JOBS[i][1]) }); } });
-        else if (!next) { var nw = ids.filter(function (i) { return !seen[i]; }); if (nw.length) next = { label: 'Complete ' + m.t.replace(/^Module (\d+):.*/, 'Module $1') + ' (' + m.t.replace(/^Module \d+:\s*/, '') + ') and its MCQ test', roles: nw.map(function (i) { return w.JOBS[i][0]; }) }; }
-      });
-      elig.sort(function (a, b) { return (b.intern ? 1 : 0) - (a.intern ? 1 : 0); });
-    } else {
-      (c.jr || []).forEach(function (r, k) {
-        var need = TRACK_UNLOCK[Math.min(k, TRACK_UNLOCK.length - 1)];
-        if (P.pct >= need) elig.push({ t: r + ' – internship track', ty: 'Unlocked at ' + need + '% · openings shared by the placement team', intern: true });
-        else if (!next) next = { label: 'Reach ' + need + '% progress', roles: [r + ' – internship track'] };
-      });
-    }
+    var roles = ci == 1 && w.JOBS
+      ? w.JOBS.map(function (j, i) { return i; }).filter(w.jobOn).map(function (i) { var j = w.JOBS[i]; return { t: j[0], ty: j[1], intern: /intern|trainee/i.test(j[0] + ' ' + j[1]) }; })
+      : (c.jr || []).slice(0, 2).map(function (r) { return { t: r + ' – internship track', ty: 'Openings shared by the placement team', intern: true }; })
+        .concat((c.jr || []).map(function (r) { return { t: r, ty: 'Full-time · entry level', intern: false }; }));
+    roles.forEach(function (x) {
+      var need = x.intern ? S.intern : S.career;
+      if (P.pct >= need) elig.push(x);
+      else if (!next || next.need == need) { next = next || { need: need, label: 'Reach ' + need + '% course progress', roles: [] }; next.roles.push(x.t); }
+    });
+    elig.sort(function (a, b) { return (b.intern ? 1 : 0) - (a.intern ? 1 : 0); });
     return { eligible: elig, next: next, pct: P.pct };
   }
   w.recIntern = recIntern;
@@ -111,7 +104,7 @@
     var tries = 0;
     (function wait() { // don't show under another popup
       if (w.Swal && w.Swal.isVisible && w.Swal.isVisible() && !(w.Swal.getPopup && w.Swal.getPopup() && w.Swal.getPopup().classList.contains('swal2-toast')) && tries++ < 40) return setTimeout(wait, 400);
-      toast(ci, top, newRec, !!recBefore);
+      if (!(w.msAction && w.msAction(ci, top))) toast(ci, top, newRec, !!recBefore);
     })();
   }
   w.msCelebrate = celebrate;

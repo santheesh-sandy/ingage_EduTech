@@ -14,7 +14,7 @@
     "build": "node scripts/build.mjs",
     "deploy:fn": "node scripts/deploy-fn.mjs",
     "check-ai": "node scripts/check-ai.mjs",
-    "db:push": "node scripts/sb-sql.mjs supabase/migrations/20261120090000_learner_data.sql",
+    "db:push": "node scripts/sb-sql.mjs supabase/migrations/20261120090000_learner_data.sql && node scripts/sb-sql.mjs supabase/migrations/20261120120000_resumes.sql",
     "gold": "node scripts/gold-eval.mjs"
   },
   "devDependencies": {

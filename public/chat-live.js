@@ -101,8 +101,10 @@
 
   /* ---------- live request ---------- */
   function enrolledIds() { return w.US ? Object.keys(w.myE()).map(Number).filter(function (i) { return w.cf(i); }) : []; }
+  var MCQ = null; // wrong answers of a submitted MCQ test, sent with the next request only
   function payload(q, fallback) {
-    var sc = (w.AIM == 'pre' ? w.aiScope() : null) || w.aiCur() || (w.AIC && w.cf(w.AIC) && !w.cf(w.AIC).hid ? w.cf(w.AIC) : null);
+    var rv = MCQ; MCQ = null;
+    var sc =(w.AIM == 'pre' ? w.aiScope() : null) || w.aiCur() || (w.AIC && w.cf(w.AIC) && !w.cf(w.AIC).hid ? w.cf(w.AIC) : null);
     var ctx = w.kSearch(q).concat(sc ? w.kSearch(q + ' ' + sc.t) : []).map(function (x) { return x.e.t + ': ' + x.e.x; })
       .filter(function (v, i, a) { return a.indexOf(v) == i; }).slice(0, 6);
     var msgs = w.CH.slice(-12).map(function (m) {
@@ -114,7 +116,8 @@
       user: w.US ? { enrolled: ids.map(function (i) { return w.cf(i).t; }), progress: w.learnerSummary ? w.learnerSummary() : [] } : null,
       profile: w.cloudProfile ? w.cloudProfile() : null,
       course: sc ? { title: sc.t, category: sc.d, hours: sc.h, fee: w.fee(sc.f), status: sc.soon ? 'coming soon' : 'open' } : null,
-      context: ctx, predefined: aiPlain(fallback).slice(0, 600),
+      context: ctx, predefined: rv ? '' : aiPlain(fallback).slice(0, 600),
+      mcqReview: rv || undefined,
       roles: w.rolesFor ? w.rolesFor(q, (sc ? [sc.i] : []).concat(ids)) : [],
       // detailed material exists for courses that have it (today: course 1); others are described by their syllabus
       courseMaterial: w.courseKbFor && focus ? w.courseKbFor(focus, q) : (w.courseKbFor && !sc ? w.courseKbFor(1, q) : null),
@@ -188,6 +191,15 @@
       })
       .catch(function () { done(fallback, 'fallback'); });
   }
+
+  // After an MCQ test: the AI explains the questions the learner got wrong (learner-journey.js calls this).
+  w.aiExplainMcq = function (label, review, fallback) {
+    if (S.busy) return;
+    w.cbM('u', label);
+    if (!aiLive()) { w.aiTyping(function () { w.cbM('b', fallback, 1); }); return; }
+    MCQ = review;
+    aiAsk(label, fallback);
+  };
 
   /* ---------- language: an auto-detected language switches back when the person types English again ---------- */
   var _setLang = w.aiSetLang;

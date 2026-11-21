@@ -78,6 +78,7 @@
         if (Object.keys(want).length > Object.keys(serverP).length) c.from('profiles').upsert(Object.assign({ id: C.uid, email: e }, want)).then(function () {});
         C.pulling = 0;
         push(true); // upload anything that only existed in this browser (and doubts without an id)
+        if (w.cvSync) w.cvSync(c, C.uid); // resume chosen at sign-up → private "resumes" bucket
         if (w.upd) w.upd();
         if (location.hash == '#learn' && w.renderLearn) w.renderLearn();
       }).catch(function () { C.pulling = 0; });
