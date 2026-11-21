@@ -243,10 +243,10 @@ test('course completion pop-up leads to the certificate', async () => {
 
 /* ---------- 5. landing hero ---------- */
 
-test('landing hero highlights Assured Internships, Real-World Projects and 100% Placement Assistance', async () => {
+test('landing hero highlights Assured Internships, Real-World Projects and Placement Assistance', async () => {
   const s = await loadSite({ url: 'https://site.test/#landing' });
   const li = [...s.w.document.querySelectorAll('.lht .hpro li b')].map(text);
-  assert.deepEqual(li, ['Assured Internships', 'Real-World Projects', '100% Placement Assistance']);
+  assert.deepEqual(li, ['Assured Internships', 'Real-World Projects', 'Placement Assistance']);
   const order = [...s.w.document.querySelector('.lht').children].map((e) => e.className || e.tagName.toLowerCase());
   assert.deepEqual(order, ['hbadge', 'h1', 'lp', 'hpro', 'hcta'], 'between the subtitle and the button');
 });

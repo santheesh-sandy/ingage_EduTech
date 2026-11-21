@@ -270,3 +270,24 @@ footer{padding-bottom:64px}
 .prep-q summary{cursor:pointer;font-weight:600;font-size:14.5px}
 .prep-q p{margin:6px 0 0}
 .mcq-rv{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--soft);line-height:1.5}
+
+/* ===== floating chat window ===== */
+/* the open chat is a card floating above the button (not a full-height side panel); the button stays as a close toggle */
+.aiw .ai-p{right:22px;bottom:calc(96px + env(safe-area-inset-bottom,0px));width:400px;max-width:calc(100vw - 44px);height:min(600px,calc(100vh - 140px));border-radius:20px;
+  box-shadow:0 28px 64px -18px rgba(15,31,61,.5),0 0 0 1px rgba(15,31,61,.08);transform-origin:100% 100%}
+body.ai-open .ai-fab{visibility:visible;width:58px;height:58px;padding:0;justify-content:center;border-radius:50%}
+body.ai-open .ai-fab svg,body.ai-open .ai-fab span,body.ai-open .ai-fab .ai-ndot{display:none}
+body.ai-open .ai-fab:after{content:'×';font:600 30px/1 Inter,sans-serif;color:#0a1224;margin-top:-3px}
+/* a gentle float on the closed button */
+@keyframes aiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+body:not(.ai-open) .ai-fab{animation:aiFloat 3.2s ease-in-out infinite}
+body:not(.ai-open) .ai-fab:hover{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){body:not(.ai-open) .ai-fab{animation:none}}
+@media (max-width:560px){
+  .aiw .ai-p{left:10px;right:10px;width:auto;max-width:none;bottom:calc(84px + env(safe-area-inset-bottom,0px));height:min(620px,calc(100dvh - 150px));border-radius:18px}
+}
+/* chat button: an icon-only circle on every screen size, floating over the page */
+.aiw .ai-fab{width:62px;height:62px;padding:0;justify-content:center;border-radius:50%;box-shadow:0 16px 34px -10px rgba(74,122,16,.7),0 0 0 5px rgba(141,198,63,.18)}
+.aiw .ai-fab span{display:none}
+.aiw .ai-fab svg{width:28px;height:28px}
+@media (max-width:560px){.aiw .ai-fab{width:56px;height:56px}.aiw .ai-fab svg{width:25px;height:25px}}
