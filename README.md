@@ -175,7 +175,12 @@ Never put an AI key or the secret key in `index.html`.
    the AI forgets or fails.
 4. **Login check**: signed-in learners send their Supabase access token; the function reads their enrollments and profile from the
    database instead of trusting the browser. Everyone else is treated as a visitor.
-5. **Role-to-skills map** (`public/role-skills.js`, a DRAFT for ingage to sign off) feeds career answers.
+5. **Role-to-skills map** (`public/role-skills.js`, a DRAFT for ingage to sign off) feeds career answers. A course with no roles
+   written there gets draft roles built from its own job roles, skills and modules (marked "not reviewed yet").
+7. **New courses need no chatbot change.** Every message sends the AI the current course list from the website (status, fee,
+   hours, modules, outcomes, skills, job roles, capstone projects) and, for the course on screen, its module and lesson material.
+   Adding a course (a `*-course.js` file or the admin course editor) is enough; the chat function only needs a redeploy when
+   `supabase/functions/_shared/chat-core.js` itself changes. Up to 40 courses are sent.
 6. Mentor doubts (`Send doubt to mentor`) are saved to the `doubts` table, never sent to the AI; mentors answer them in the admin dashboard.
 
 ## Bugs fixed

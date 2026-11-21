@@ -124,7 +124,8 @@
       courses: w.cxVis().map(function (c) {
         return { title: c.t, category: c.d, hours: c.h, fee: w.fee(c.f) + ' (incl. GST)', status: c.soon ? 'coming soon' : 'open', summary: c.s,
           learn: c.l, outcomes: c.o, skills: c.k, jobRoles: c.jr, industries: c.ind, prerequisites: c.pre,
-          syllabus: (w.aiMods ? w.aiMods(c) : []).map(function (m) { return m.t; }) };
+          syllabus: (w.aiMods ? w.aiMods(c) : []).map(function (m) { return m.t; }),
+          capstones: w.capList ? w.capList(c.i).map(function (p) { return p.t; }) : [] };
       })
     };
   }

@@ -261,5 +261,6 @@ test('courses page: an enrolled course says "Continue learning"', async () => {
   await sleep(400);
   const prices = [...s.w.document.querySelectorAll('#courses .price')].map(text);
   assert.ok(prices.includes('Continue learning →'), prices.join('|'));
-  assert.equal(prices.filter((p) => /Coming soon/.test(p)).length, 4, 'courses 2–5 (Cyber Security Essentials is open)');
+  assert.equal(prices.filter((p) => /Coming soon/.test(p)).length, s.w.cxVis().filter((c) => c.soon).length, 'one "Coming soon" per course that is not open');
+  assert.deepEqual([...s.w.cxVis().filter((c) => c.soon).map((c) => c.i)], [2, 3, 4], 'Digital Twin, Cyber Security, Mobile App and EV are open');
 });

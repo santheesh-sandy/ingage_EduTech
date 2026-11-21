@@ -13,7 +13,7 @@
 //   ALLOWED_ORIGINS    → comma-separated origins allowed to call this, e.g. https://ingage.in (default *)
 //   RATE_LIMIT         → messages per IP per minute (default 15)
 
-export const LIMITS = { messages: 12, chars: 1500, courses: 20, context: 6, maxTokens: 700, timeoutMs: 20000 };
+export const LIMITS = { messages: 12, chars: 1500, courses: 40, context: 6, maxTokens: 700, timeoutMs: 20000 };
 
 export const clip = (v, n) => String(v ?? '').slice(0, n);
 
@@ -67,7 +67,7 @@ export function systemPrompt(b = {}) {
     '- Enroll: open a course, review the syllabus, Enroll now, log in or sign up, pay, then start in My Learning. Only courses with status "open" can be enrolled in.',
     '- Internships: details are on the "Internships" page; apply in Career → Internships & jobs.',
     '- ingage does not publish verified placement counts, placement rates or salary figures.',
-    '- Courses (JSON; "syllabus" lists the modules): ' + JSON.stringify(courses),
+    '- Courses (JSON; "syllabus" lists the modules, "capstones" the capstone projects to choose from). This list comes from the website on every message and is always current: it may include courses added recently; use it as the source of truth: ' + JSON.stringify(courses),
     b.course ? '- The person is currently looking at: ' + clip(JSON.stringify(b.course), 400) : '',
     profileLine(b.profile),
     Array.isArray(b.user?.progress) && b.user.progress.length ? '- Their progress and unlocked internships: ' + clip(JSON.stringify(b.user.progress.slice(0, 5)), 1500) : '',
