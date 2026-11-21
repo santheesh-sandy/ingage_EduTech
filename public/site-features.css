@@ -291,3 +291,6 @@ body:not(.ai-open) .ai-fab:hover{animation-play-state:paused}
 .aiw .ai-fab span{display:none}
 .aiw .ai-fab svg{width:28px;height:28px}
 @media (max-width:560px){.aiw .ai-fab{width:56px;height:56px}.aiw .ai-fab svg{width:25px;height:25px}}
+/* white AI sparkle (and ×) on the green circle */
+.aiw .ai-fab{color:#fff}
+body.ai-open .ai-fab:after{color:#fff}
