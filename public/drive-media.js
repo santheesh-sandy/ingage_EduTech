@@ -117,7 +117,7 @@
       var k = DM.deckOf(a.getAttribute('href'));
       if (k) { a.href = DM.s3Slide(k, /\.pdf$/i.test(a.getAttribute('href'))); newTab(a); }
     });
-    lw.querySelectorAll('video.uv').forEach(function (v) {
+    lw.querySelectorAll('video.uv[data-p]').forEach(function (v) { // IT Network lessons only (other courses use full links)
       var p = v.getAttribute('data-p');
       v.removeAttribute('onerror');
       v.onerror = function () { driveBox(v); }; // not on S3 → Google Drive player

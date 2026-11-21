@@ -56,9 +56,9 @@ test('a video lesson plays from S3 (both parts of a two-part lesson); a video mi
   const l = lessons(s.w).find((x) => Array.isArray(x.v) && x.v.length == 2);
   const lw = await open(s, l);
   const v = [...lw.querySelectorAll('video.uv')];
-  assert.deepEqual(v.map((x) => x.getAttribute('src')), ['https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/4-static-routing.mp4', 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/Video-5+Static+continue+and+Dynamic+routing(Task+no_2).mp4']);
+  assert.deepEqual(v.map((x) => x.getAttribute('src')), ['https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/Video-4+Static+Routing+(Task+no_2).mp4', 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/Video-5+Static+continue+and+Dynamic+routing(Task+no_2).mp4']);
   assert.deepEqual([...lw.querySelectorAll('h4')].map(text).filter((t) => /^Part/.test(t)), ['Part 1 of 2: Static routing', 'Part 2 of 2: Static (continued) and dynamic routing']);
-  // part 1 is not on S3 → Google Drive player
+  // if part 1 fails to load from S3 → Google Drive player
   v[0].dispatchEvent(new s.w.Event('error'));
   assert.equal(lw.querySelector('.dv iframe').getAttribute('src'), 'https://drive.google.com/file/d/1NRhMlMShfPZ5Z5l7K8ehf8jhPSnjVFly/preview');
   assert.equal(lw.querySelectorAll('video.uv').length, 1, 'part 2 still plays from S3');
@@ -146,9 +146,14 @@ test('the live AI receives the course material (hardware, software, related slid
   assert.match(p, /8 GB RAM/);
 });
 
-test('questions about another course do not get the networking material', async () => {
+test('questions about another course get that course\'s material, not the networking material', async () => {
   const s = await loadSite({ url: 'https://site.test/#course' });
   s.w.CVI = 6; s.open(); await sleep(30);
   await s.ask('Is this course good for someone who wants to work in a SOC at night?');
-  assert.equal(s.calls.at(-1).body.courseMaterial, null);
+  const m = s.calls.at(-1).body.courseMaterial;
+  assert.equal(m.hours, 60);
+  assert.match(m.modules[0], /Cybersecurity foundations/);
+  assert.ok(!m.modules.some((x) => /Windows Server|Active Directory|Ubuntu/.test(x)), 'no networking-course modules');
+  s.w.CVI = 4; await s.ask('Is this course good for someone who wants to work at night?');
+  assert.equal(s.calls.at(-1).body.courseMaterial, null, 'a course without a curriculum sends none');
 });

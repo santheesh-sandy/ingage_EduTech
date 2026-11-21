@@ -146,6 +146,9 @@
     6: { tech: ['Firewalls & VPNs', 'Access control & MFA', 'Vulnerability scanning', 'Log analysis & SIEM basics', 'Windows & Linux hardening', 'Incident response'],
       why: 'Every organisation that stores data is a target. Banks, IT services, e-commerce and government teams hire analysts who can spot attacks early and keep systems secure.',
       apps: ['Watching alerts in Security Operations Centres (SOC)', 'Protecting banking and e-commerce systems', 'Running security audits and compliance checks', 'Responding to phishing and malware incidents'] },
+    7: { tech: ['Flutter SDK', 'Dart', 'Android Studio / VS Code', 'Provider (state management)', 'REST APIs, HTTP & JSON', 'Local storage (shared_preferences)'],
+      why: 'Most people reach businesses through their phones. Startups, agencies, banks and shops need developers who can ship one app to both Android and iOS quickly, and Flutter is one of the most used tools for that.',
+      apps: ['Shopping and food-delivery apps', 'Banking and payment apps', 'Learning and booking apps', 'Internal apps for field staff with camera and location'] },
   };
   w.COURSE_INFO = COURSE_INFO;
   var PLACEMENT = {

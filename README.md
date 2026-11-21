@@ -48,6 +48,24 @@ tests/                  85 automated tests (node:test + jsdom)
 sideways scrolling, content running off screen, and headings that don't line up with the logo.
 Run `npm start`, then `pip install playwright && playwright install chromium && python3 scripts/check_layout.py`.
 
+## Cyber Security Essentials (course 6)
+
+`public/cyber-course.js` holds the course: 10 modules, 26 slide decks and a 5-question MCQ test per module
+(questions written from the slides; score 3 of 5 to unlock the next module). Decks load from S3:
+`Cyber Security Essentials/Slides/<deck file name>.pptx`, shown with the Office Online viewer.
+18 lab videos come from `Cyber Security Essentials/Videos/<file name>.mp4` (list `VIDEOS` in the same file: module,
+deck it follows, S3 file name, title). They play in the site's own player; finishing a video completes the step, and a video
+that is not uploaded yet shows "This video is not available yet". Upload them as `.mp4` (browsers cannot play `.wmv`).
+`npm run check-media` checks these links too.
+
+## Mobile App Development (course 7)
+
+`public/mad-course.js` holds the course: 10 modules, each with 2 slide decks, that day's video and a 5-question MCQ test.
+Files load from S3: `Mobile App Development/Slides/<file name>.pptx` and `Mobile App Development/Videos/Day1.mp4 … Day 10.mp4`.
+Lesson titles come from the file names; modules 8–10 reuse the Day-6 slides (API basics, state management, offline storage).
+Course card details (careers, pay ranges, industries) are in `index.html` (`C`, `AIDEF`, `AISAL`), the course page sections
+in `public/site-features.js` (`COURSE_INFO[7]`) and the chatbot career map in `public/role-skills.js`.
+
 ## Course slides & videos (Amazon S3)
 
 `public/drive-media.js` loads every lesson of *IT Network System Administrator* from the S3 bucket `ingage-lms` (ap-south-1),
@@ -55,8 +73,8 @@ folder `IT Network System Administrator/`:
 - Slides: `slides/M1-1.pptx` (*Download PPT*) and `slides/pdf/M1-1.pdf` (shown in the lesson viewer), 30 decks.
 - Videos: `videos/<the lesson's video path in MD>.mp4`, played in the site's own player (so watching to the end marks the step complete).
 - Files must stay publicly readable. To move the files, change `DRIVE_MEDIA.s3`.
-- A video that S3 doesn't have falls back to the Google Drive copy (`DRIVE_MEDIA.videos`). Today that is only
-  video 4 (*Static routing*): upload it to S3 as `videos/4-static-routing.mp4` and it is used automatically.
+- A video that S3 doesn't have falls back to the Google Drive copy (`DRIVE_MEDIA.videos`). Today all 25 videos are on S3;
+  `npm run check-media` checks every slide and video address.
 - To host the files next to `index.html` instead (`public/slides/`, `public/slides/pdf/`, `public/videos/`), set `DRIVE_MEDIA.on = false`.
 
 The chatbot's course knowledge (`public/course-knowledge.js`) was written from the text of all 30 decks:

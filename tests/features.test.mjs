@@ -35,7 +35,7 @@ test('every course (open and coming soon) has a syllabus', async () => {
     const cv = await course(s, c.i);
     const n = cv.querySelectorAll('#syl .syl-m').length;
     assert.ok(n >= 4, `${c.t}: ${n} modules`);
-    const first = c.i == 1 ? s.w.MD[0].t : c.l[0].replace(/\.$/, '');
+    const first = c.i == 1 ? s.w.MD[0].t : c.cur && c.cur.length ? c.cur[0].t : c.l[0].replace(/\.$/, '');
     assert.ok(text(cv.querySelector('#syl')).includes(first), `${c.t}: real module names`);
   }
   assert.deepEqual(s.errors, []);
@@ -260,5 +260,5 @@ test('courses page: an enrolled course says "Continue learning"', async () => {
   await sleep(400);
   const prices = [...s.w.document.querySelectorAll('#courses .price')].map(text);
   assert.ok(prices.includes('Continue learning →'), prices.join('|'));
-  assert.equal(prices.filter((p) => /Coming soon/.test(p)).length, 5);
+  assert.equal(prices.filter((p) => /Coming soon/.test(p)).length, 4, 'courses 2–5 (Cyber Security Essentials is open)');
 });
