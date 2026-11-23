@@ -19,7 +19,7 @@ function setDone(s, done) { const all = JSON.parse(s.w.localStorage.getItem('sf_
 
 /* ---------- 1. capstone projects ---------- */
 
-test('course page shows 5 capstone projects with outcomes before enrolling', async () => {
+test('course page shows 5 capstone projects with outcomes before enrolling, for information only', async () => {
   const s = await loadSite();
   s.w.show(1); await sleep(50);
   const sec = s.w.$('cx-capstones');
@@ -28,11 +28,11 @@ test('course page shows 5 capstone projects with outcomes before enrolling', asy
   const cards = sec.querySelectorAll('.cap-card');
   assert.equal(cards.length, 5);
   for (const c of cards) assert.equal(c.querySelectorAll('.cap-o i').length, 3, 'three outcomes each');
-  // choosing one from the page opens the picker with that project selected
+  // not selectable here: the choice is made in My Learning after enrolling
+  for (const c of cards) { assert.equal(c.tagName, 'DIV'); assert.ok(c.classList.contains('ro') && !c.hasAttribute('onclick')); }
   cards[0].click(); await sleep(20);
-  assert.ok(s.w.$('mo').classList.contains('on'));
-  assert.match(text(s.w.$('mb').querySelector('.cap-card.on')), /Small-office network/);
-  assert.match(text(s.w.$('mb').querySelector('.cap-tree')), /Small-office network.*Module 1:.*Module 2:.*Module 4:.*Module 5:.*Capstone project/);
+  assert.ok(!s.w.$('mo').classList.contains('on'), 'clicking a card opens nothing');
+  assert.match(text(sec.querySelector('.cx-sub')), /After you enroll, you choose one of these projects in My Learning/);
   assert.deepEqual(s.errors, []);
 });
 
@@ -54,7 +54,7 @@ test('a chosen capstone shows only its modules, as a tree ending with the projec
   assert.deepEqual(s.errors, []);
 });
 
-test('the capstone chosen before paying is saved on the enrollment; learners without one are asked to choose', async () => {
+test('the capstone is chosen in My Learning only: learners without one are asked there, and the choice is saved', async () => {
   const s = await learner({});
   s.w.LC = 1; s.w.location.hash = '#learn'; await sleep(80);
   assert.match(text(s.w.$('lw').querySelector('.cap-ask')), /Choose your capstone project/);
@@ -64,11 +64,13 @@ test('the capstone chosen before paying is saved on the enrollment; learners wit
   assert.equal(JSON.parse(s.w.localStorage.getItem('sf_enr'))[EMAIL][1].cap, 'linux');
   assert.ok(!s.w.$('lw').querySelector('.cap-ask'));
   assert.match(text(s.w.$('lw').querySelector('.cap-head')), /Linux web and file server/);
-  // checkout stores the pending choice (index.html: cap:capPick(CK))
-  s.w.sessionStorage.setItem('sf_cap_1', 'wan');
-  assert.equal(s.w.capPick(1), 'wan');
-  s.w.sessionStorage.setItem('sf_cap_1', 'nope');
-  assert.equal(s.w.capPick(1), undefined, 'unknown ids are ignored');
+  // the course page now says where to change it, and links to My Learning
+  s.w.show(1); await sleep(50);
+  assert.match(text(s.w.$('cx-capstones').querySelector('.cx-sub')), /Your project: Linux web and file server\. You can change it in My Learning/);
+  assert.match(text(s.w.$('cx-capstones').querySelector('button')), /Change it in My Learning/);
+  // the picker cannot be opened for a course the person is not enrolled in
+  s.w.cl_(); s.w.capModal(6, 'change'); await sleep(10);
+  assert.ok(!s.w.$('mo').classList.contains('on'));
 });
 
 /* ---------- 2. resume upload ---------- */

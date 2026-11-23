@@ -51,18 +51,13 @@ test('Enroll now first shows the syllabus review, then continues to sign in', as
   assert.equal(s.w.$('mb').querySelectorAll('.syl-m').length, s.w.$('cv').querySelectorAll('#syl .syl-m').length);
   assert.ok(!s.w.$('lo').classList.contains('on'), 'login not shown yet');
   assert.ok(s.w.document.body.classList.contains('has-ov'), 'chat button switches to compact mode over dialogs');
-  assert.match(text(s.w.$('mb')), /STEP 1 OF 4.*Next: 2 Choose capstone → 3 Sign in/);
+  assert.match(text(s.w.$('mb')), /STEP 1 OF 3.*Next: 2 Sign in \/ Sign up → 3 Pay/);
+  assert.doesNotMatch(text(s.w.$('mb')), /capstone →|Choose capstone/i, 'no capstone step in enrolment');
   s.w.eval(s.w.$('mb').querySelector('.syl-go .btn').getAttribute('onclick')); await sleep(30);
-  // step 2: choose a capstone project
-  assert.ok(mo.classList.contains('on') && s.w.$('mb').querySelector('.cap-pick'), 'capstone picker open');
-  assert.equal(s.w.$('mb').querySelectorAll('.cap-card').length, 5);
-  assert.ok(s.w.$('mb').querySelector('.syl-go .btn').disabled, 'cannot continue without a project');
-  s.w.$('mb').querySelectorAll('.cap-card')[2].click(); await sleep(20);
-  assert.ok(s.w.$('mb').querySelector('.cap-tree'), 'learning path shown');
-  s.w.eval(s.w.$('mb').querySelector('.syl-go .btn').getAttribute('onclick')); await sleep(30);
-  assert.ok(!mo.classList.contains('on'), 'picker closed');
-  assert.ok(s.w.$('lo').classList.contains('on'), 'login shown (step 3)');
-  assert.equal(s.w.capPick(1), 'domain', 'choice kept for checkout');
+  // straight to sign in: enrolment never asks for a capstone
+  assert.ok(!s.w.$('mb').querySelector('.cap-pick'), 'no capstone picker');
+  assert.ok(!mo.classList.contains('on'), 'review closed');
+  assert.ok(s.w.$('lo').classList.contains('on'), 'login shown (step 2)');
   assert.equal(s.w.PEND, 1, 'enrollment continues after login');
   // second time in the same visit: straight to login
   s.w.cl_(); await sleep(20);
@@ -84,8 +79,7 @@ test('opening a module of the inline syllabus counts as reviewed (just rendering
   s.w.cl_();
   const c = s.w.cf(6); c.soon = 0; // pretend course 6 is open
   s.w.enroll(6); await sleep(20);
-  assert.ok(!s.w.$('mb').querySelector('.syl-gate'), 'reviewed course skips the syllabus step');
-  assert.ok(s.w.$('mb').querySelector('.cap-pick'), '…and goes on to choosing a capstone');
+  assert.ok(!s.w.$('mo').classList.contains('on'), 'reviewed course goes straight on (no syllabus step, no capstone step)');
 });
 
 test('enrolled learners and coming-soon courses are not blocked', async () => {
@@ -94,7 +88,7 @@ test('enrolled learners and coming-soon courses are not blocked', async () => {
   s.w.US = { email, name: 'L' };
   s.w.enroll(1); await sleep(30);
   assert.ok(!s.w.$('mo').classList.contains('on'), 'no review for an enrolled course');
-  s.w.enroll(2); await sleep(30); // coming soon → existing "coming soon" popup, no review
+  s.w.enroll(3); await sleep(30); // coming soon (Terrain LiDAR) → existing "coming soon" popup, no review
   assert.match(text(s.w.$('mb')), /^$|.*/);
   assert.ok(!/REVIEW SYLLABUS/.test(text(s.w.$('mb'))));
 });
@@ -262,5 +256,5 @@ test('courses page: an enrolled course says "Continue learning"', async () => {
   const prices = [...s.w.document.querySelectorAll('#courses .price')].map(text);
   assert.ok(prices.includes('Continue learning →'), prices.join('|'));
   assert.equal(prices.filter((p) => /Coming soon/.test(p)).length, s.w.cxVis().filter((c) => c.soon).length, 'one "Coming soon" per course that is not open');
-  assert.deepEqual([...s.w.cxVis().filter((c) => c.soon).map((c) => c.i)], [2, 3, 4], 'Digital Twin, Cyber Security, Mobile App and EV are open');
+  assert.deepEqual([...s.w.cxVis().filter((c) => c.soon).map((c) => c.i)], [3, 4], 'only Terrain LiDAR and AR/VR are coming soon');
 });

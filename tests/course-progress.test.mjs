@@ -33,7 +33,7 @@ test('every course page has: learn (skills, technologies, topics), syllabus, cap
     const cv = s.w.$('cv');
     const ids = [...cv.querySelectorAll('.cx-left > .cx-sec, .cx-left > .syl')].map((e) => e.id);
     const caps = ['cx-capstones']; // every course has capstone projects (own or built from its modules)
-    assert.deepEqual(ids, ['cx-learn', 'syl', ...caps, 'cx-industry', 'cx-outcomes', 'cx-careers', 'cx-placement'], `${c.t}: section order`);
+    assert.deepEqual(ids, ['cx-overview', 'cx-learn', 'syl', ...caps, 'cx-industry', 'cx-outcomes', 'cx-careers', 'cx-placement'], `${c.t}: section order`);
     const learn = cv.querySelector('#cx-learn');
     assert.ok(learn.querySelectorAll('.cx-chips span').length >= 6, `${c.t}: skills + technologies`);
     assert.ok(learn.querySelectorAll('.cx-chips.tech span').length >= 5, `${c.t}: technologies`);
@@ -50,7 +50,7 @@ test('every course page has: learn (skills, technologies, topics), syllabus, cap
     assert.match(pl, /100%.*Placement assistance/);
     assert.match(pl, /Internships/);
     assert.match(pl, /not guaranteed|Final selection is made by the hiring company/);
-    assert.equal(cv.querySelectorAll('.cx-nav a').length, 6 + caps.length, 'in-page section menu');
+    assert.equal(cv.querySelectorAll('.cx-nav a').length, 7 + caps.length, 'in-page section menu');
     assert.match(text(cv.querySelector('.ip-card')), /100% placement assistance.*50% course progress/);
   }
   assert.deepEqual(s.errors, []);
@@ -62,7 +62,7 @@ test('section menu scrolls to each section', async () => {
   const seen = [];
   s.w.Element.prototype.scrollIntoView = function () { seen.push(this.id); };
   for (const a of s.w.$('cv').querySelectorAll('.cx-nav a')) a.click();
-  assert.deepEqual(seen, ['cx-learn', 'syl', 'cx-capstones', 'cx-industry', 'cx-outcomes', 'cx-careers', 'cx-placement']);
+  assert.deepEqual(seen, ['cx-overview', 'cx-learn', 'syl', 'cx-capstones', 'cx-industry', 'cx-outcomes', 'cx-careers', 'cx-placement']);
 });
 
 /* ---------- 7: progress tracking & milestone pop-ups ---------- */

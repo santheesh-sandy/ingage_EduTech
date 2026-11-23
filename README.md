@@ -66,6 +66,14 @@ Lesson titles come from the file names; modules 8–10 reuse the Day-6 slides (A
 Course card details (careers, pay ranges, industries) are in `index.html` (`C`, `AIDEF`, `AISAL`), the course page sections
 in `public/site-features.js` (`COURSE_INFO[7]`) and the chatbot career map in `public/role-skills.js`.
 
+## Other courses built from S3 files
+
+Each has its own file with the curriculum, 5-question MCQ tests, capstone projects (`w.CAPS[id]`) and, where given, the card picture:
+`public/pcb-course.js` (course 2, PCB Design & Testing — replaced 3D Modeling with LiDAR; videos in `PCB Design/Videos/` and
+`PCB Design/Videos/Kicad/`), `public/dt-course.js` (course 5, Digital Twin, folder `Digital_Twin`), `public/ev-course.js` (course 8).
+Course card details (careers, pay, industries) are in `index.html` (`C`, `AIDEF`, `AISAL`), page sections in `site-features.js`
+(`COURSE_INFO`), career roles in `role-skills.js`, and chatbot keywords for each course in `index.html` (`KW`, `AIINT`).
+
 ## Course slides & videos (Amazon S3)
 
 `public/drive-media.js` loads every lesson of *IT Network System Administrator* from the S3 bucket `ingage-lms` (ap-south-1),

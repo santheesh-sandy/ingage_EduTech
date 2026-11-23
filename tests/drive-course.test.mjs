@@ -35,20 +35,33 @@ test('every slide deck and video lesson maps to a Google Drive file, and every D
   for (const id of Object.values(DM.slides).flat().concat(Object.values(DM.videos).map((v) => v[0]))) assert.match(id, /^[\w-]{25,}$/);
 });
 
-test('a slide lesson shows the PDF from S3 with full-screen and PPT download links', async () => {
+test('a slide lesson shows the PDF from S3, view only: no download links, PDF toolbar hidden, in-page full screen', async () => {
   const s = await learner();
   const l = lessons(s.w).find((x) => x.pp && x.pp.includes('M7-2'));
   const lw = await open(s, l);
   const f = lw.querySelector('.pv iframe');
-  assert.equal(f.getAttribute('src'), 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/pdf/M7-2.pdf#view=FitH');
-  const links = [...lw.querySelectorAll('.pvb a')].map((a) => [text(a), a.getAttribute('href')]);
-  assert.deepEqual(links, [
-    ['⤢ Full screen', 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/pdf/M7-2.pdf'],
-    ['⬇ Download PPT', 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/M7-2.pptx'],
-  ]);
+  assert.equal(f.getAttribute('src'), 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/pdf/M7-2.pdf#toolbar=0&navpanes=0&view=FitH');
+  assert.equal(lw.querySelectorAll('.pvb a').length, 0, 'no links out of the viewer');
+  assert.equal(lw.querySelectorAll('a[download], a[href*=".pptx"], a[href*=".pdf"]').length, 0);
+  assert.match(text(lw.querySelector('.pvb button')), /Full screen/);
+  assert.doesNotMatch(text(lw), /Download PPT|Download notes/);
   s.w.LTAB = 'res'; s.w.renderLearn(); await sleep(20);
-  assert.equal(s.w.$('lw').querySelector('.utc a[href*="M7-2"]').getAttribute('href'), 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/M7-2.pptx', 'Resources tab too');
+  const res = s.w.$('lw').querySelector('.utc');
+  assert.doesNotMatch(text(res), /Download PPT|Download notes/, 'Resources tab has no material downloads');
+  assert.match(text(res), /view-only/);
+  assert.match(text(res), /Download receipt/, 'the payment receipt stays');
   assert.deepEqual(s.errors, []);
+});
+
+test('lesson videos cannot be downloaded from the player', async () => {
+  const s = await learner();
+  const lw = await open(s, lessons(s.w).find((x) => x.v));
+  const v = lw.querySelector('video.uv');
+  assert.match(v.getAttribute('controlslist'), /nodownload/);
+  assert.ok(v.hasAttribute('disablepictureinpicture'));
+  const ev = new s.w.MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+  v.dispatchEvent(ev);
+  assert.ok(ev.defaultPrevented, 'right-click "Save video as" is blocked');
 });
 
 test('a video lesson plays from S3 (both parts of a two-part lesson); a video missing on S3 falls back to Drive', async () => {

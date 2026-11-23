@@ -51,8 +51,9 @@ test('a learner sees the first deck in the slide viewer, from S3', async () => {
   const l = lessons(s.w)[0];
   s.w.LS = l.id; s.w.renderLearn(); await sleep(20);
   const f = s.w.$('lw').querySelector('.pv iframe');
-  assert.equal(f.getAttribute('src'), 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(S3 + 'Module-01_Session-1_Cyber-Foundations-Careers-and-DigiLocker.pptx'));
-  assert.ok(s.w.$('lw').querySelector('a[href="' + S3 + 'Module-01_Session-1_Cyber-Foundations-Careers-and-DigiLocker.pptx"]'), 'open-in-new-tab link');
+  assert.equal(f.getAttribute('src'), 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(S3 + 'Module-01_Session-1_Cyber-Foundations-Careers-and-DigiLocker.pptx') + '&wdDownloadButton=False&wdPrint=0');
+  assert.ok(!s.w.$('lw').querySelector('a[href*=".pptx"]'), 'no link to the raw PPTX (view only)');
+  assert.match(s.w.$('lw').querySelector('.pvb button').textContent, /Full screen/);
   assert.deepEqual(s.errors, []);
 });
 

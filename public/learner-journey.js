@@ -1,6 +1,7 @@
 /* ingage EduTech – learner journey
- *  1. Capstone projects: 5 projects with outcomes, shown before enrolling. The learner picks one; My Learning then shows
- *     only the modules that project needs, in a tree (capstone → module → lessons), ending with the capstone itself.
+ *  1. Capstone projects: 5 projects with outcomes, shown on the course page (information only). Enrolment never asks for one:
+ *     the learner chooses (or changes) a project in My Learning, which then shows only the modules that project needs,
+ *     in a tree (capstone → module → lessons), ending with the capstone itself.
  *  2. Resume upload at sign-up (PDF, DOCX or TXT). The text is read in the browser and used to fill in the Resume builder;
  *     with Supabase on, the file is stored in the private "resumes" bucket.
  *  3. Wrong MCQ answers: after a test is submitted, the floating AI chatbot explains the correct answers and the concepts.
@@ -56,7 +57,6 @@
   function swalBusy() { return w.Swal && w.Swal.isVisible && w.Swal.isVisible() && !(w.Swal.getPopup && w.Swal.getPopup() && w.Swal.getPopup().classList.contains('swal2-toast')); }
   function afterPopups(fn) { var n = 0; (function wait() { if (swalBusy() && n++ < 120) return setTimeout(wait, 400); fn(); })(); }
   function pct(ci) { return w.prog ? w.prog(ci).pct : 0; }
-  function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { w['_' + k] = v; return w['_' + k]; } return null; }
 
   /* =====================================================================
    *  1. CAPSTONES
@@ -92,7 +92,6 @@
   function capFind(i, id) { return capList(i).filter(function (x) { return x.id == id; })[0] || null; }
   function capOf(c) { var e = c && w.US && w.myE()[c.i]; return e && e.cap ? capFind(c.i, e.cap) : null; }
   w.capOf = capOf;
-  w.capPick = function (i) { var v = ss('sf_cap_' + i); return v && capFind(i, v) ? v : undefined; }; // chosen before paying
 
   var _mods = w.mods;
   w.modsAll = _mods;
@@ -136,47 +135,46 @@
           m.ls.map(function (l) { return '<li>' + esc(l.t) + ' <small>' + esc(l.m || '') + '</small></li>'; }).join('') + '</ul></details></li>';
       }).join('') + '</ul></div>';
   }
+  // act: a click handler name (selectable card, used in My Learning) or empty (display-only card, used on the course page)
   function capCard(i, cp, on, act) {
-    return '<button type="button" class="cap-card' + (on ? ' on' : '') + '" aria-pressed="' + (on ? 'true' : 'false') + '" onclick="' + act + '(' + i + ',\'' + cp.id + '\')">' +
+    var tag = act ? 'button' : 'div';
+    return '<' + tag + (act ? ' type="button"' : '') + ' class="cap-card' + (on ? ' on' : '') + (act ? '' : ' ro') + '"' +
+      (act ? ' aria-pressed="' + (on ? 'true' : 'false') + '" onclick="' + act + '(' + i + ',\'' + cp.id + '\')"' : '') + '>' +
       '<span class="cap-e">' + cp.e + '</span><b>' + esc(cp.t) + '</b><span class="cap-b">' + esc(cp.brief) + '</span>' +
       '<span class="cap-o">' + cp.out.map(function (x) { return '<i>✓ ' + esc(x) + '</i>'; }).join('') + '</span>' +
-      '<span class="cap-m">Modules ' + cp.mods.slice().sort(function (a, b) { return a - b; }).join(', ') + ' · ' + cp.tools.map(esc).join(', ') + '</span></button>';
+      '<span class="cap-m">Modules ' + cp.mods.slice().sort(function (a, b) { return a - b; }).join(', ') + ' · ' + cp.tools.map(esc).join(', ') + '</span></' + tag + '>';
   }
 
-  // course page: "Capstone projects" section (before enrolling, the five projects with outcomes)
+  // course page: the capstone projects with their outcomes, for information only.
+  // Choosing a project happens only in My Learning, after enrolling (enrolment itself never asks for it).
   w.capSectionHtml = function (c) {
     var L5 = capList(c.i); if (!L5.length) return '';
-    var mine = capOf(c);
+    var mine = capOf(c), en = enrolled(c.i);
     return '<div class="cx-sec" id="cx-capstones"><h3>🛠️ ' + L5.length + ' Capstone Projects</h3><p class="cx-sub">' +
-      (mine ? 'Your project: <b>' + esc(mine.t) + '</b>. You can switch in My Learning.' : 'Pick one project when you enroll. My Learning then shows only the lessons that project needs.') + '</p>' +
-      '<div class="cap-grid">' + L5.map(function (cp) { return capCard(c.i, cp, mine && mine.id == cp.id, 'capFromPage'); }).join('') + '</div></div>';
-  };
-  w.capFromPage = function (i, id) {
-    if (enrolled(i)) return capModal(i, 'change', id);
-    ss('sf_cap_' + i, id); capModal(i, 'pre', id);
+      (mine ? 'Your project: <b>' + esc(mine.t) + '</b>. You can change it in My Learning.'
+        : en ? 'Choose your project in My Learning. It then shows only the lessons that project needs.'
+          : 'After you enroll, you choose one of these projects in My Learning. It then shows only the lessons that project needs.') + '</p>' +
+      '<div class="cap-grid">' + L5.map(function (cp) { return capCard(c.i, cp, mine && mine.id == cp.id, ''); }).join('') + '</div>' +
+      (en ? '<button class="btn o" style="margin-top:14px" onclick="LC=' + c.i + ';LS=null;nav(\'learn\')">' + (mine ? 'Change it in My Learning →' : 'Choose in My Learning →') + '</button>' : '') + '</div>';
   };
 
-  // modal: choose a capstone (before enrolling, or to change it later)
+  // modal: choose or change the capstone project (opened from My Learning only)
   function capModal(i, mode, sel) {
-    var c = w.cf(i), L5 = capList(i); if (!L5.length) return w.enroll(i);
-    sel = sel || (mode == 'pre' ? w.capPick(i) : (capOf(c) || {}).id) || null;
+    var c = w.cf(i), L5 = capList(i); if (!L5.length || !enrolled(i)) return;
+    sel = sel || (capOf(c) || {}).id || null;
     var cp = sel ? capFind(i, sel) : null;
     w.cl_();
-    $('mb').innerHTML = '<div class="cap-pick">' + (mode == 'pre' ? '<span class="pill">STEP 2 OF 4 · CHOOSE YOUR CAPSTONE</span>' : '<span class="pill">YOUR CAPSTONE PROJECT</span>') +
+    $('mb').innerHTML = '<div class="cap-pick"><span class="pill">YOUR CAPSTONE PROJECT</span>' +
       '<h2 style="margin-top:12px">Choose your capstone project</h2><p class="sub" style="margin:0 0 12px">Each project lists what you will be able to show at the end. ' +
-      'Your lessons are picked to match it.' + (mode == 'change' ? ' Lessons you already completed stay completed.' : '') + '</p>' +
+      'Your lessons are picked to match it. Lessons you already completed stay completed.</p>' +
       '<div class="cap-grid">' + L5.map(function (x) { return capCard(i, x, cp && cp.id == x.id, 'capSel'); }).join('') + '</div>' +
       (cp ? '<h4 style="margin:18px 0 8px">Your learning path</h4>' + treeHtml(c, cp) : '<p class="meta" style="margin-top:14px">Select a project to see its learning path.</p>') +
-      '<div class="syl-go">' + (mode == 'pre'
-        ? '<button class="btn pb" style="background:var(--br2)" ' + (cp ? '' : 'disabled ') + 'onclick="capGo(' + i + ')">Continue to enroll →</button><span class="meta" style="font-size:12.5px">Next: 3 Sign in / Sign up → 4 Pay</span>'
-        : '<button class="btn pb" style="background:var(--br2)" ' + (cp ? '' : 'disabled ') + 'onclick="capSave(' + i + ')">Use this project</button><button class="syl-btn" type="button" onclick="cl_()">Cancel</button>') +
-      '</div></div>';
+      '<div class="syl-go"><button class="btn pb" style="background:var(--br2)" ' + (cp ? '' : 'disabled ') + 'onclick="capSave(' + i + ')">Use this project</button><button class="syl-btn" type="button" onclick="cl_()">Cancel</button></div></div>';
     $('mo').classList.add('on');
-    capModal.mode = mode; capModal.sel = cp ? cp.id : null;
+    capModal.sel = cp ? cp.id : null;
   }
   w.capModal = capModal;
-  w.capSel = function (i, id) { if (capModal.mode == 'pre') ss('sf_cap_' + i, id); capModal(i, capModal.mode || 'pre', id); };
-  w.capGo = function (i) { if (!w.capPick(i)) return; w.cl_(); w.enroll(i); };
+  w.capSel = function (i, id) { capModal(i, 'change', id); };
   w.capSave = function (i) {
     var id = capModal.sel; if (!id || !capFind(i, id) || !enrolled(i)) return;
     var all = w.enr();
@@ -186,13 +184,6 @@
     swal({ toast: true, position: 'top-end', icon: 'success', title: 'Learning path updated', timer: 1800, showConfirmButton: false });
   };
 
-  // enrolling: syllabus review (site-features) → choose capstone → sign in → pay
-  var _enroll = w.enroll;
-  w.enroll = function (i) {
-    var c = w.cf(i);
-    if (c && capList(i).length && !c.soon && !c.hid && !enrolled(i) && w.sylSeen && w.sylSeen(i) && !w.capPick(i)) return capModal(i, 'pre');
-    return _enroll(i);
-  };
 
   /* ---------- My Learning: capstone tree header, or a prompt to choose one ---------- */
   var _renderLearn = w.renderLearn;
@@ -536,3 +527,16 @@
   if (location.hash == '#next' && w.US) w.nxRender();
   if (location.hash == '#internship' && w.renderIntern) w.renderIntern();
 })(window, document);
+
+/* Course materials are view-only: no right-click "Save as" on slides and videos inside a lesson. */
+(function (d) {
+  'use strict';
+  d.addEventListener('contextmenu', function (e) {
+    var t = e.target;
+    if (t && t.closest && t.closest('#lw .pv, #lw .dv, #lw video')) e.preventDefault();
+  }, true);
+  d.addEventListener('dragstart', function (e) {
+    var t = e.target;
+    if (t && t.closest && t.closest('#lw .pv, #lw video')) e.preventDefault();
+  }, true);
+})(document);

@@ -131,9 +131,9 @@
     1: { tech: ['Cisco Packet Tracer', 'GNS3', 'Wireshark', 'VirtualBox', 'Windows Server', 'Active Directory', 'Group Policy', 'Ubuntu Linux', 'DHCP · DNS · HTTP · FTP', 'VPN & NPS', 'IPv4 / IPv6'],
       why: 'Every business runs on a network. Companies of all sizes need people who can set up, secure and fix LANs, servers and user accounts: the everyday work of L1 network and system administration teams.',
       apps: ['Setting up and running office and branch networks', 'Supporting users, servers and Active Directory at IT service companies', 'Monitoring links and handling incidents in NOC teams', 'Giving employees secure remote access with VPNs'] },
-    2: { tech: ['Terrestrial & mobile LiDAR', 'Point clouds (LAS / LAZ, E57)', 'Scan registration', 'Point classification', 'Mesh modelling', 'CAD / BIM export', 'GIS export'],
-      why: 'Construction, infrastructure and plant teams use LiDAR to capture accurate as-built data fast. Turning raw scans into usable 3D models is a skill in demand for BIM, survey and digital-twin projects.',
-      apps: ['As-built surveys of buildings, plants and factories', 'BIM models for construction and renovation', 'Heritage and monument documentation', 'Measuring stockpiles and volumes in mining'] },
+    2: { tech: ['Tinkercad Circuits', 'Arduino', 'Breadboarding', 'KiCad (schematic & PCB editors)', 'ERC / DRC checks', 'Gerber & drill files'],
+      why: 'Every electronic product, from phones to EV chargers, is built on printed circuit boards. India’s electronics manufacturing is growing fast, and companies need people who can design, check and test boards that factories can build.',
+      apps: ['Designing boards for IoT devices and sensors', 'Motor and power boards for EVs and appliances', 'Testing and debugging boards in electronics factories', 'Prototyping student and startup hardware projects'] },
     3: { tech: ['Airborne & ground LiDAR', 'LAS / LAZ point clouds', 'Ground classification', 'DEM / DSM', 'Contours & slope maps', 'GIS layers', 'Coordinate systems'],
       why: 'Planners and engineers rely on accurate terrain models before they build roads, drains or mines. LiDAR terrain processing is used daily by survey, GIS and infrastructure firms.',
       apps: ['Road, rail and pipeline route planning', 'Flood and drainage analysis', 'Forestry and agriculture mapping', 'Earthwork and mining volume calculations'] },
@@ -185,9 +185,17 @@
     var I = COURSE_INFO[c.i] || { tech: c.k || [], why: '', apps: [] }, D = sylData(c), st = sylStats(c, D), jr = c.jr || [], fr = freshRange(c);
     var topics = D.filter(function (m) { return !m.cap; }).map(function (m) { return m.t; });
     var caps = w.capSectionHtml ? w.capSectionHtml(c) : '';
-    var nav = [['learn', 'Learn'], ['syl', 'Syllabus']].concat(caps ? [['capstones', 'Capstones']] : [], [['industry', 'Industry'], ['outcomes', 'Outcomes'], ['careers', 'Careers'], ['placement', 'Placement']]);
+    var nav = [['overview', 'Overview'], ['learn', 'Learn'], ['syl', 'Syllabus']].concat(caps ? [['capstones', 'Capstones']] : [], [['industry', 'Industry'], ['outcomes', 'Outcomes'], ['careers', 'Careers'], ['placement', 'Placement']]);
+    // overview: short description, the business side the course covers, main topics, practical outcomes
+    var O = (w.COURSE_OVERVIEW || {})[c.i] || {}, intro = O.intro || c.s, biz = O.biz || I.why;
     return w.demo(c) +
       '<div class="cx-nav" role="navigation" aria-label="Course sections">' + nav.map(function (x) { return '<a onclick="cxGo(\'' + x[0] + '\')">' + x[1] + '</a>'; }).join('') + '</div>' +
+      sec('overview', '📘', 'Course Overview', '',
+        '<p class="cx-intro">' + esc(intro) + '</p>' +
+        (biz ? '<div class="cx-biz"><b class="cx-h">💼 How it is used in business</b><p>' + esc(biz) + '</p></div>' : '') +
+        '<div class="cx-2"><div class="cx-box"><b class="cx-h">Main topics</b><ul class="ck">' + w.li(topics.slice(0, 6).map(esc)) + (topics.length > 6 ? '<li class="meta">+ ' + (topics.length - 6) + ' more in the syllabus</li>' : '') + '</ul></div>' +
+        '<div class="cx-box"><b class="cx-h">You will be able to</b><ul class="ck">' + w.li((c.o || []).slice(0, 3).map(esc)) + '</ul></div></div>' +
+        '<p class="cx-feeline">💰 Course fee <b>' + w.fee(c.f) + '</b> incl. GST · ⏱ ' + c.h + ' hours · ' + (c.soon ? '🔜 Coming soon' : '✅ Open for enrollment') + '</p>') +
       sec('learn', '🎯', 'What You’ll Learn', 'The skills, technologies and topics this course covers.',
         '<ul class="ck">' + w.li(c.l) + '</ul>' +
         '<div class="cx-grid3"><div><b class="cx-h">Skills</b>' + chips(c.k || []) +
@@ -252,11 +260,10 @@
   function sylGate(i) {
     var c = w.cf(i), D = sylData(c);
     w.cl_();
-    var four = !!(w.capList && w.capList(i).length);
-    $('mb').innerHTML = '<div class="syl-gate"><span class="pill">STEP 1 OF ' + (four ? 4 : 3) + ' · REVIEW SYLLABUS</span><h2 style="margin-top:12px">' + esc(c.t) + '</h2>' +
+    $('mb').innerHTML = '<div class="syl-gate"><span class="pill">STEP 1 OF 3 · REVIEW SYLLABUS</span><h2 style="margin-top:12px">' + esc(c.t) + '</h2>' +
       '<p class="sub" style="margin:0 0 6px">Please review what you will learn before you enroll.</p>' + sylSummary(c, D) + sylModsHtml(c, D, true) +
       '<div class="syl-go"><button class="btn pb" style="background:var(--br2)" onclick="sylContinue(' + i + ')"><span class="syl-lg">I’ve reviewed the syllabus · </span>Continue to enroll →</button>' +
-      '<button class="syl-btn" type="button" onclick="sylPrint(' + i + ')">⬇ Download</button><span class="meta" style="font-size:12.5px">' + (four ? 'Next: 2 Choose capstone → 3 Sign in / Sign up → 4 Pay' : 'Next: 2 Sign in / Sign up → 3 Pay') + '</span></div></div>';
+      '<button class="syl-btn" type="button" onclick="sylPrint(' + i + ')">⬇ Download</button><span class="meta" style="font-size:12.5px">Next: 2 Sign in / Sign up → 3 Pay</span></div></div>';
     $('mo').classList.add('on');
   }
   w.sylContinue = function (i) { sylMark(i); w.cl_(); w.enroll(i); };

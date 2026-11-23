@@ -91,7 +91,18 @@
         next: ['Finish the course', 'Build one project on a real ESP32 board', 'Apply for IoT internships through Career'],
         timing: 'After the 40-hour course, a few weeks of hardware practice helps before applying. Hiring time varies.' },
       { role: 'GIS Analyst', course: 3, notOpen: true, needs: ['GIS tools', 'Coordinate systems', 'Terrain data'], covers: ['Course not open yet.'], gaps: 'No open ingage course covers GIS right now.', next: ['Talk to a counsellor'], timing: 'No estimate until the course opens.' },
-      { role: 'LiDAR Data Technician', course: 2, notOpen: true, needs: ['LiDAR scanning', 'Point cloud processing', '3D modelling'], covers: ['Course not open yet.'], gaps: 'No open ingage course covers LiDAR right now.', next: ['Talk to a counsellor'], timing: 'No estimate until the course opens.' }
+      { role: 'PCB Design Engineer (Trainee)', course: 2,
+        needs: ['Basic electronics (Ohm’s law, diodes, sensors)', 'Schematic capture', 'Footprints and component selection', 'PCB layout and routing', 'Design rule checks', 'Manufacturing files'],
+        covers: ['Circuits in Tinkercad with Arduino (Modules 1-5)', 'Diodes, rectifiers, motors and sensors (Modules 3-4)', 'KiCad schematics, ERC and BOM (Modules 6-8)', 'Footprints, layout and routing (Module 9)', 'Layers, 3D view and Gerber files (Module 10)'],
+        gaps: 'High-speed and multi-layer design, signal integrity, other industry tools (Altium, OrCAD) and hands-on soldering of real boards are not covered.',
+        next: ['Finish all 10 modules and the MCQ tests', 'Complete a capstone and order your board from a PCB maker', 'Learn to solder and test a real board', 'Apply for PCB design or hardware internships through Career'],
+        timing: 'The course is 40 hours: about 5-6 weeks at 8 hours a week. Most trainees build 2-3 boards before applying; hiring time varies.' },
+      { role: 'Electronics Test Technician', course: 2,
+        needs: ['Reading schematics', 'Multimeter and basic test equipment', 'Circuit fault finding', 'Following test procedures'],
+        covers: ['Building and testing circuits (Modules 1-5)', 'Reading schematics and BOMs (Modules 7-8)'],
+        gaps: 'Lab instruments (oscilloscope, power supplies) and factory test procedures are learned on the job.',
+        next: ['Finish the course', 'Practise with a real multimeter on simple circuits', 'Apply to electronics manufacturers for trainee roles'],
+        timing: 'After the 40-hour course, a few weeks of hands-on practice helps before applying. There is no fixed timeline.' }
     ]
   };
 

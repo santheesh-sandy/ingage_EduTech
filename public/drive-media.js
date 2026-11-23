@@ -79,7 +79,6 @@
   var G = 'https://drive.google.com/';
   DM.preview = function (id) { return G + 'file/d/' + id + '/preview'; };
   DM.view = function (id) { return G + 'file/d/' + id + '/view'; };
-  DM.download = function (id) { return G + 'uc?export=download&id=' + id; };
   DM.deckOf = function (path) { var m = /(M\d+-\d+)\.(pptx|pdf)/i.exec(String(path)); return m ? m[1].toUpperCase() : null; };
   DM.vidNo = function (path) { var m = /(\d+)/.exec(String(path).replace(/^videos\//, '')); return m ? +m[1] : null; };
   DM.slideIds = function (path) { var k = DM.deckOf(path); return k && DM.slides[k]; };
@@ -89,11 +88,11 @@
   function s3enc(p) { return String(p).split('/').map(function (s) { return encodeURIComponent(s).replace(/%20/g, '+'); }).join('/'); }
   DM.s3Slide = function (deck, pdf) { return DM.s3 + (pdf ? 'slides/pdf/' + deck + '.pdf' : 'slides/' + deck + '.pptx'); };
   DM.s3Video = function (path) { return DM.s3 + s3enc(path) + '.mp4'; }; // e.g. videos/1-cisco-packet-tracer → …/videos/1-cisco-packet-tracer.mp4
-  function newTab(a) { a.removeAttribute('download'); a.target = '_blank'; a.rel = 'noopener'; }
 
   function esc(s) { return w.esc(String(s)); }
 
-  // Point the learning page's slide viewer, slide links and videos at S3.
+  // Point the learning page's slide viewer and videos at S3. Course materials are view-only: no download links,
+  // and the PDF viewer opens without its toolbar (download / print buttons).
   function apply() {
     if (!DM.on) return;
     var lw = w.$('lw');
@@ -101,21 +100,9 @@
     lw.querySelectorAll('.pv iframe').forEach(function (f) {
       var k = DM.deckOf(f.getAttribute('src'));
       if (!k) return;
-      f.src = DM.s3Slide(k, 1) + '#view=FitH';
+      f.src = DM.s3Slide(k, 1) + '#toolbar=0&navpanes=0&view=FitH';
       f.setAttribute('allow', 'fullscreen');
       f.setAttribute('loading', 'lazy');
-      var bar = f.closest('.pv').nextElementSibling;
-      if (bar && bar.classList.contains('pvb')) {
-        bar.querySelectorAll('a').forEach(function (a) {
-          if (/Full screen/i.test(a.textContent)) a.href = DM.s3Slide(k, 1);
-          if (/Download/i.test(a.textContent)) { a.href = DM.s3Slide(k); newTab(a); }
-        });
-      }
-    });
-    // any other link to a local deck (Resources tab "Download PPT")
-    lw.querySelectorAll('a[href^="slides/"]').forEach(function (a) {
-      var k = DM.deckOf(a.getAttribute('href'));
-      if (k) { a.href = DM.s3Slide(k, /\.pdf$/i.test(a.getAttribute('href'))); newTab(a); }
     });
     lw.querySelectorAll('video.uv[data-p]').forEach(function (v) { // IT Network lessons only (other courses use full links)
       var p = v.getAttribute('data-p');
@@ -135,8 +122,7 @@
       box.className = 'dv';
       box.innerHTML = '<iframe src="' + DM.preview(hit[0]) + '" title="' + esc('Video ' + DM.vidNo(v.getAttribute('data-p')) + ': ' + hit[1]) +
         '" allow="autoplay; fullscreen; encrypted-media" allowfullscreen loading="lazy"></iframe>' +
-        '<div class="dvb"><span class="meta">🎬 ' + esc(hit[1]) + ' · from Google Drive</span>' +
-        '<a class="btn o" href="' + DM.view(hit[0]) + '" target="_blank" rel="noopener">⤢ Open in Drive</a></div>' +
+        '<div class="dvb"><span class="meta">🎬 ' + esc(hit[1]) + ' · view only</span></div>' +
         '<p class="meta dvn">When you finish the video, press <b>Mark complete & continue</b>.</p>';
       var hd = v.previousElementSibling;
       if (hd && hd.tagName == 'H4' && /^Part \d+ of \d+:/.test(hd.textContent)) hd.textContent = hd.textContent.replace(/:.*$/, ': ' + hit[1]);

@@ -63,7 +63,7 @@ export function systemPrompt(b = {}) {
     '- Learning: lessons, slides, videos and MCQ tests are online in "My Learning". A certificate is given on completing the course requirements.',
     '- Placement assistance (support, NOT a guarantee): resume and portfolio reviews, mock interviews, placement drives, internship opportunities and referrals. The hiring company makes the final decision.',
     '- Progress milestones in My Learning: 30% Resume builder (filled in from the resume uploaded at sign-up), 50% internship opportunities, 60% career opportunities (full-time roles), 80% placement preparation (checklist, interview questions, mock interviews), 100% course completion certificate.',
-    '- Capstone projects (every course): before enrolling, the learner picks 1 of up to 5 capstone projects shown on the course page; My Learning then shows only the modules that project needs, ending with the project itself. It can be changed later in My Learning.',
+    '- Capstone projects (every course): the course page shows up to 5 capstone projects; enrolment does NOT ask for one. After enrolling, the learner chooses 1 in My Learning; My Learning then shows only the modules that project needs, ending with the project itself. It can be changed later in My Learning.',
     '- Enroll: open a course, review the syllabus, Enroll now, log in or sign up, pay, then start in My Learning. Only courses with status "open" can be enrolled in.',
     '- Internships: details are on the "Internships" page; apply in Career → Internships & jobs.',
     '- ingage does not publish verified placement counts, placement rates or salary figures.',

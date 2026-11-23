@@ -59,7 +59,7 @@ test('a learner sees the first deck from S3 and plays the Day 1 video in the sit
   const s = await learner(m1.slice(0, 2).map((l) => l.id));
   s.w.LS = m1[0].id; s.w.renderLearn(); await sleep(20);
   assert.equal(s.w.$('lw').querySelector('.pv iframe').getAttribute('src'),
-    'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(B + 'Slides/Module-01_Session-1_Mobile-App-Development-Basics-and-Frameworks.pptx'));
+    'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(B + 'Slides/Module-01_Session-1_Mobile-App-Development-Basics-and-Frameworks.pptx') + '&wdDownloadButton=False&wdPrint=0');
   s.w.LS = m1[2].id; s.w.renderLearn(); await sleep(20);
   const v = s.w.$('lw').querySelector('video.uv');
   assert.equal(v.getAttribute('src'), B + 'Videos/Day1.mp4');

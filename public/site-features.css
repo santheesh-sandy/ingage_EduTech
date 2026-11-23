@@ -294,3 +294,19 @@ body:not(.ai-open) .ai-fab:hover{animation-play-state:paused}
 /* white AI sparkle (and ×) on the green circle */
 .aiw .ai-fab{color:#fff}
 body.ai-open .ai-fab:after{color:#fff}
+
+/* ===== course price, overview and view-only materials ===== */
+.cc .cmeta{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:13.5px;color:var(--mu)}
+.cc .cfee{color:var(--tx);font-size:13px}
+.cc .cfee b{font-size:19px;font-weight:800;color:var(--brt);margin-right:2px}
+.pill.pfee{background:rgba(141,198,63,.18);color:var(--brt);font-weight:800}
+.cx-intro{font-size:16px;line-height:1.65;margin:0 0 14px;color:var(--tx)}
+.cx-biz{border-left:4px solid var(--br);background:var(--sf2);border-radius:0 12px 12px 0;padding:12px 16px;margin:0 0 14px}
+.cx-biz p{margin:6px 0 0;line-height:1.6;color:var(--tx)}
+.cx-feeline{margin:14px 0 0;padding:10px 14px;border-radius:12px;background:var(--soft);font-size:14px}
+.cx-feeline b{color:var(--brt);font-size:16px}
+/* view-only lesson materials: no text selection or dragging out of the viewers */
+#lw .pv,#lw .dv,#lw video.uv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* course-page capstone cards are information only (the choice is made in My Learning) */
+.cap-card.ro{cursor:default}
+.cap-card.ro:hover{border-color:var(--ln);transform:none}
