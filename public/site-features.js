@@ -152,6 +152,12 @@
     8: { tech: ['EV motors & inverters', 'Power electronics (MOSFETs, boost converters)', 'Tinkercad circuit simulation', 'Charging standards (AC, DC, CCS2)', 'Battery management systems (SOC, SOH)', 'Smart charging & V2G'],
       why: 'India is moving fast to electric two-wheelers, cars and buses. EV makers, battery companies and charging networks need technicians and engineers who understand motors, charging and battery safety.',
       apps: ['Servicing electric scooters, cars and buses', 'Installing and maintaining charging stations', 'Testing and monitoring battery packs', 'Planning fleet charging for delivery and transport companies'] },
+    9: { tech: ['Industrial robot arms (6-axis, SCARA)', 'Teach pendant programming', 'Robot I/O and program logic', 'Sensors, grippers and vision', 'PLC, HMI and SCADA', 'Robot safety and cobots'],
+      why: 'Car, electronics, packaging and metal plants in India are adding robots to raise quality and output. They need people who can program robots, keep cells running and work safely around them.',
+      apps: ['Welding and painting on car assembly lines', 'Pick-and-place and packing in FMCG and electronics', 'Palletizing in warehouses', 'Machine tending for CNC and moulding machines'] },
+    10: { tech: ['Arduino and ESP32', 'Sensors and actuators', 'Blynk IoT dashboards', 'ThingSpeak and MATLAB analysis', 'MQTT, HiveMQ and Node-RED', 'Firebase, Kodular apps, Twilio and Convai'],
+      why: 'Factories, farms, homes, hospitals and cities are adding connected sensors to save energy, prevent breakdowns and act on live data. Companies need people who can wire sensors, program boards and get the data to the cloud and to a phone.',
+      apps: ['Smart homes and buildings: lights, security and energy monitoring', 'Machine and environment monitoring in factories', 'Smart farming: soil, water and weather sensing', 'Gas, fire and intrusion alerts by SMS or call'] },
   };
   w.COURSE_INFO = COURSE_INFO;
   var PLACEMENT = {

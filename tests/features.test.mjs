@@ -258,3 +258,23 @@ test('courses page: an enrolled course says "Continue learning"', async () => {
   assert.equal(prices.filter((p) => /Coming soon/.test(p)).length, s.w.cxVis().filter((c) => c.soon).length, 'one "Coming soon" per course that is not open');
   assert.deepEqual([...s.w.cxVis().filter((c) => c.soon).map((c) => c.i)], [3, 4], 'only Terrain LiDAR and AR/VR are coming soon');
 });
+
+test('course cards: Enrolled / In progress / Completed badge sits next to the department pill on every card', async () => {
+  const email = 'st@test.in';
+  const s0 = await loadSite();
+  const ids = (ci) => s0.w.mods(s0.w.cf(ci)).flatMap((m) => m.ls.map((l) => l.id));
+  const enr = { [email]: { 6: { done: ids(6) }, 7: { done: [] }, 9: { done: ids(9).slice(0, 4) } } };
+  const s = await loadSite({ url: 'https://site.test/#courses', storage: { sf_sess: JSON.stringify({ email, name: 'S', role: 's' }), sf_enr: JSON.stringify(enr) } });
+  await sleep(400);
+  const card = (i) => [...s.w.document.querySelectorAll('#cl .cc')].find((e) => e.getAttribute('onclick') == 'show(' + i + ')');
+  const st = (i) => [text(card(i).querySelector('.ctag .cst') || { textContent: '' }), text(card(i).querySelector('.price'))];
+  assert.deepEqual(st(6), ['✓ Completed', 'Review course →']);
+  assert.deepEqual(st(7), ['Enrolled', 'Continue learning →']);
+  assert.match(st(9)[0], /^In progress · \d+%$/);
+  assert.equal(st(9)[1], 'Continue learning →');
+  assert.deepEqual(st(8), ['', 'Enroll now →']);
+  const order = [...s.w.document.querySelectorAll('#cl .cc')].map((e) => +e.getAttribute('onclick').match(/\d+/)[0]);
+  assert.deepEqual(order.slice(0, 3), [6, 9, 7], 'Completed, then In progress, then Enrolled');
+  assert.deepEqual(order.slice(-2), [3, 4], 'Coming soon last');
+  for (const e of s.w.document.querySelectorAll('#cl .cc')) assert.ok(e.querySelector('.ctag .pill') && e.querySelector('.price'), 'same parts on every card');
+});

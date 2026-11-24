@@ -310,3 +310,20 @@ body.ai-open .ai-fab:after{color:#fff}
 /* course-page capstone cards are information only (the choice is made in My Learning) */
 .cap-card.ro{cursor:default}
 .cap-card.ro:hover{border-color:var(--ln);transform:none}
+
+/* ===== course cards: same layout on every card =====
+   department pill + status badge in one row, title max 2 lines, description max 3 lines,
+   hours/fee and the action always pinned to the bottom, so cards line up across all rows */
+.card.cc{height:100%}
+.cc .ctag{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px}
+.cc .ctag .pill{margin:0;flex:none}
+.cc h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.3;min-height:2.6em}
+.card.cc .meta{flex:none;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;line-height:1.6;min-height:4.8em}
+.cc .cmeta{margin-top:auto;padding-top:10px}
+.cc .cst{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;line-height:1.4}
+.cc .cst.en{background:rgba(59,130,246,.12);color:#2563eb}
+.cc .cst.ip{background:rgba(245,158,11,.15);color:#b45309}
+.cc .cst.dn{background:rgba(141,198,63,.2);color:var(--brt)}
+.cc .price{display:flex;align-items:center;min-height:28px}
+.cc .price.st-dn{color:var(--brt)}
+.cc .price.st-soon{color:var(--mu)}
