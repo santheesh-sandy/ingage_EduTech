@@ -327,3 +327,11 @@ body.ai-open .ai-fab:after{color:#fff}
 .cc .price{display:flex;align-items:center;min-height:28px}
 .cc .price.st-dn{color:var(--brt)}
 .cc .price.st-soon{color:var(--mu)}
+
+/* ===== view-only slide viewer: covers over the Office viewer toolbar buttons that lead to downloads ===== */
+.pv{position:relative}
+.pv-sh{position:absolute;bottom:0;height:26px;background:#444;z-index:3;cursor:not-allowed;display:block}
+.pv-sh-l{left:0;width:44px}
+.pv-sh-r{right:0;width:96px}
+.pv:fullscreen{display:flex;flex-direction:column;background:#000}.pv:fullscreen iframe{height:100%;min-height:0;flex:1}
+.pv:-webkit-full-screen iframe{height:100%;min-height:0}

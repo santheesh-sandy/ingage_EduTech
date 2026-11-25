@@ -72,15 +72,15 @@
       ['Why create a custom symbol?', ['When the part you need is not in the library', 'To make the board heavier', 'To skip the schematic', 'Symbols cannot be custom'], 0]]],
     ['ERC, BOM, components and footprints', [
       ['Module-08_Session-1_Kicad-Part-3-ERC-and-BOM', 'KiCad part 3: ERC and BOM', 'Kicad/5. Kicad - Part 3', 'KiCad part 3'],
-      ['Module-08_Session-2_Kicad-Part-4-Component-Selection-and-Footprints', 'KiCad part 4: component selection and footprints', 'Kicad/6. Kicad - Part 4', 'KiCad part 4']], [
+      ['Module-08_Session-2_Kicad-Part-4-Component-Selection-and-Footprints', 'KiCad part 4: component selection and footprints', 'Kicad/6.  Kicad - Part 4', 'KiCad part 4']], [
       ['What does ERC (Electrical Rules Check) find?', ['Spelling mistakes', 'Problems like unconnected pins or outputs wired together', 'The board colour', 'The price of parts'], 1],
       ['A BOM (bill of materials) is…', ['A list of every component needed to build the board', 'A drill file', 'A 3D view', 'A wiring error'], 0],
       ['Through-hole (THT) and surface-mount (SMD) parts differ in that…', ['They are the same', 'SMD parts need holes', 'SMD parts sit on pads on the surface; THT leads go through holes', 'THT parts are always smaller'], 2],
       ['Before laying out the PCB, every symbol must…', ['Be deleted', 'Be coloured', 'Be rotated 90°', 'Have a footprint assigned'], 3],
       ['Where do you find a part’s pin layout and package size?', ['In its datasheet', 'On social media', 'In the Gerber file', 'In the BOM only'], 0]]],
     ['Footprints, layout and routing', [
-      ['Module-09_Session-1_Kicad-Part-5-Footprint-Creation-and-Layout', 'KiCad part 5: footprint creation and layout', 'Kicad/7. Kicad - Part 5', 'KiCad part 5'],
-      ['Module-09_Session-2_Kicad-Part-6-PCB-Routing-and-Auto-Routing', 'KiCad part 6: PCB routing and auto-routing', 'Kicad/8. Kicad - Part 6', 'KiCad part 6']], [
+      ['Module-09_Session-1_Kicad-Part-5-Footprint-Creation-and-Layout', 'KiCad part 5: footprint creation and layout', 'Kicad/7.  Kicad - Part 5', 'KiCad part 5'],
+      ['Module-09_Session-2_Kicad-Part-6-PCB-Routing-and-Auto-Routing', 'KiCad part 6: PCB routing and auto-routing', 'Kicad/8.  Kicad - Part 6', 'KiCad part 6']], [
       ['The thin lines (ratsnest) in the PCB editor show…', ['Finished copper tracks', 'Connections that still need to be routed', 'The board outline', 'Drill holes'], 1],
       ['A via is used to…', ['Mark the company logo', 'Hold the board in a case', 'Connect a track on one copper layer to another layer', 'Measure temperature'], 2],
       ['Why are power tracks usually made wider?', ['They carry more current and must not overheat', 'To look nicer', 'To save copper', 'Width does not matter'], 0],

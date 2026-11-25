@@ -167,13 +167,16 @@ test('networking: internships unlock at 50%, full-time roles at 60%', async () =
   assert.equal(R.next, null);
 });
 
-test('other courses: internship tracks at 50%, career roles at 60%', async () => {
+test('other courses: their own internships at 50%, their own career roles at 60%', async () => {
   const s0 = await loadSite();
   const at = async (pct) => { const s = await learner({ 6: firstN(s0.w, 6, pct) }); return s.w.recIntern(6); };
   assert.equal((await at(10)).eligible.length, 0);
-  assert.equal((await at(55)).eligible.length, 2);
+  const half = await at(55);
+  assert.deepEqual([...half.eligible.map((x) => x.t)], ['SOC Analyst Intern', 'Vulnerability Assessment Intern']);
   const done = await at(65);
-  assert.equal(done.eligible.length, 2 + s0.w.cf(6).jr.length);
+  assert.equal(done.eligible.length, s0.w.cf(6).jobs.length);
+  assert.ok(done.eligible.some((x) => x.t == 'SOC Analyst (L1)'));
+  assert.ok(!done.eligible.some((x) => /Network Support Intern|PCB/.test(x.t)), 'no other course’s roles');
   assert.equal(done.next, null);
 });
 
@@ -181,7 +184,7 @@ test('recommendations appear in My Learning and on the Internships page', async 
   const s0 = await loadSite();
   const s = await learner({ 6: firstN(s0.w, 6, 55) });
   s.w.LC = 6; s.w.location.hash = '#learn'; await sleep(80);
-  assert.match(text(s.w.$('pgcard').querySelector('.rec')), /SOC Analyst \(L1\) – internship track.*Next unlock: Reach 60%/);
+  assert.match(text(s.w.$('pgcard').querySelector('.rec')), /SOC Analyst Intern.*Next unlock: Reach 60%/);
   s.w.location.hash = '#internship'; await sleep(80);
   assert.match(text(s.w.$('internship').querySelector('.ip-status')), /Cyber Security Essentials · \d+% complete.*SOC Analyst/);
 });

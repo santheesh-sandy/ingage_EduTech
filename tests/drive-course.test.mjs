@@ -35,12 +35,15 @@ test('every slide deck and video lesson maps to a Google Drive file, and every D
   for (const id of Object.values(DM.slides).flat().concat(Object.values(DM.videos).map((v) => v[0]))) assert.match(id, /^[\w-]{25,}$/);
 });
 
-test('a slide lesson shows the PDF from S3, view only: no download links, PDF toolbar hidden, in-page full screen', async () => {
+test('a slide lesson shows the deck from S3 in the sandboxed slide viewer: no download, no new window, in-page full screen', async () => {
   const s = await learner();
   const l = lessons(s.w).find((x) => x.pp && x.pp.includes('M7-2'));
   const lw = await open(s, l);
   const f = lw.querySelector('.pv iframe');
-  assert.equal(f.getAttribute('src'), 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/pdf/M7-2.pdf#toolbar=0&navpanes=0&view=FitH');
+  assert.equal(f.getAttribute('src'), 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent('https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/slides/M7-2.pptx?v=' + s.w.DECK_V) + '&wdDownloadButton=False&wdPrint=0');
+  const sb = f.getAttribute('sandbox').split(' ');
+  assert.ok(sb.includes('allow-scripts') && !sb.includes('allow-popups') && !sb.includes('allow-downloads') && !sb.includes('allow-top-navigation'), 'viewer cannot open windows or download');
+  assert.ok(!/\.pdf/.test(f.getAttribute('src')), 'no PDF in the browser PDF viewer (it can always be saved)');
   assert.equal(lw.querySelectorAll('.pvb a').length, 0, 'no links out of the viewer');
   assert.equal(lw.querySelectorAll('a[download], a[href*=".pptx"], a[href*=".pdf"]').length, 0);
   assert.match(text(lw.querySelector('.pvb button')), /Full screen/);
@@ -64,19 +67,29 @@ test('lesson videos cannot be downloaded from the player', async () => {
   assert.ok(ev.defaultPrevented, 'right-click "Save video as" is blocked');
 });
 
-test('a video lesson plays from S3 (both parts of a two-part lesson); a video missing on S3 falls back to Drive', async () => {
+test('a video lesson plays from S3 (both parts of a two-part lesson); a video missing on S3 shows a learner-friendly note', async () => {
   const s = await learner();
   const l = lessons(s.w).find((x) => Array.isArray(x.v) && x.v.length == 2);
   const lw = await open(s, l);
   const v = [...lw.querySelectorAll('video.uv')];
   assert.deepEqual(v.map((x) => x.getAttribute('src')), ['https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/Video-4+Static+Routing+(Task+no_2).mp4', 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/videos/Video-5+Static+continue+and+Dynamic+routing(Task+no_2).mp4']);
   assert.deepEqual([...lw.querySelectorAll('h4')].map(text).filter((t) => /^Part/.test(t)), ['Part 1 of 2: Static routing', 'Part 2 of 2: Static (continued) and dynamic routing']);
-  // if part 1 fails to load from S3 → Google Drive player
+  // if part 1 fails to load from S3 → "not available yet" note (the Google Drive copies were removed, so no Drive player)
   v[0].dispatchEvent(new s.w.Event('error'));
-  assert.equal(lw.querySelector('.dv iframe').getAttribute('src'), 'https://drive.google.com/file/d/1NRhMlMShfPZ5Z5l7K8ehf8jhPSnjVFly/preview');
+  assert.equal(lw.querySelector('.dv iframe'), null, 'no broken Google Drive player');
+  assert.match(text(lw), /This video is not available yet/);
   assert.equal(lw.querySelectorAll('video.uv').length, 1, 'part 2 still plays from S3');
   assert.ok([...lw.querySelectorAll('button')].some((b) => /Mark complete/.test(b.textContent)), 'learner can mark it complete');
-  assert.ok(!/Video not found/.test(text(lw)));
+  assert.ok(!/Video not found|next to index\.html/.test(text(lw)), 'no developer message shown to learners');
+});
+
+test('the Google Drive player comes back only when driveFallback is switched on', async () => {
+  const s = await learner();
+  s.w.DRIVE_MEDIA.driveFallback = true;
+  const l = lessons(s.w).find((x) => Array.isArray(x.v) && x.v.length == 2);
+  const lw = await open(s, l);
+  lw.querySelector('video.uv').dispatchEvent(new s.w.Event('error'));
+  assert.equal(lw.querySelector('.dv iframe').getAttribute('src'), 'https://drive.google.com/file/d/1NRhMlMShfPZ5Z5l7K8ehf8jhPSnjVFly/preview');
 });
 
 test('file names with spaces, commas and ".mp4" in them map to their S3 address', async () => {

@@ -64,7 +64,7 @@ for (const l of lessons) {
     jobs.push({ name, what: 'video ' + n, url: DM.s3Video(p), run: async () => {
       const s3 = await probe(DM.s3Video(p), 'mp4');
       if (s3.ok) return { ...s3, via: 'S3' };
-      if (!hit) return { ok: false, why: 'S3: ' + s3.why + '; no Drive fallback' };
+      if (!hit || !DM.driveFallback) return { ok: false, why: 'S3: ' + s3.why + '; no Drive fallback' };
       const dr = await probeDrive(hit[0]);
       return dr.ok ? { ok: true, via: 'Drive fallback', warn: 'S3: ' + s3.why } : { ok: false, why: 'S3: ' + s3.why + '; Drive: ' + dr.why };
     } });
@@ -75,7 +75,8 @@ for (const x of cur) {
   jobs.push({ name: x.name, what: x.ty == 'video' ? 'video' : 'slides ' + kind.toUpperCase(), url: x.url, run: () => probe(x.url, kind) });
 }
 // also check every Drive video id on its own, so the fallbacks are known good before they are needed
-for (const [n, [id, t]] of Object.entries(DM.videos)) jobs.push({ name: 'Drive fallback', what: 'video ' + n + ' ' + t, url: DM.view(id), run: () => probeDrive(id) });
+// (only while the Drive fallback is switched on in public/drive-media.js)
+if (DM.driveFallback) for (const [n, [id, t]] of Object.entries(DM.videos)) jobs.push({ name: 'Drive fallback', what: 'video ' + n + ' ' + t, url: DM.view(id), run: () => probeDrive(id) });
 
 const results = new Array(jobs.length);
 let next = 0;

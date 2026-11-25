@@ -349,16 +349,20 @@
   var _rsData = w.rsData;
   w.rsData = function () {
     var r = _rsData(), cv = myCv(), f = (cv && cv.f) || {}, c = w.cf(w.ccId()), cp = capOf(c);
+    var D = w.rsDefFor ? w.rsDefFor(c) : { sk: (c.k || []).join(', '), pr: '' };
     function empty(k) { return r[k] == null || String(r[k]).trim() === ''; }
     ['ph', 'ln', 'sum', 'ex', 'ed', 'ce', 'la'].forEach(function (k) { if (empty(k) && f[k]) r[k] = f[k]; });
     if (empty('sk') && f.sk) {
-      var base = (c.i == 1 && w.RDEF ? w.RDEF.sk : (c.k || []).join(', ')).split(/\s*,\s*/), seen = {};
+      var base = String(D.sk || '').split(/\s*,\s*/), seen = {};
       r.sk = base.concat(f.sk.split(/\s*,\s*/)).filter(function (x) { var k = x.toLowerCase(); if (!x || seen[k]) return false; seen[k] = 1; return true; }).join(', ');
     }
     if (empty('pr') && (cp || f.pr)) {
+      // the chosen capstone first (title | where, then its outcomes as points), then the course's other suggested projects
       var pr = [];
-      if (cp) pr.push('Capstone: ' + cp.t + ' — ' + cp.out[0]);
-      pr = pr.concat(String((c.i == 1 && w.RDEF ? w.RDEF.pr : '') || '').split('\n'), String(f.pr || '').split('\n')).filter(Boolean);
+      if (cp) pr.push('Capstone: ' + cp.t + ' | ingage EduTech', '- ' + cp.out.join('\n- '));
+      var rest = String(D.pr || '').split('\n'), skip = false;
+      if (cp) rest = rest.filter(function (x) { if (!/^\s*-/.test(x)) skip = x.indexOf(cp.t) == 0; return !skip; });
+      pr = pr.concat(rest, String(f.pr || '').split('\n')).filter(Boolean);
       r.pr = pr.join('\n');
     }
     return r;
@@ -383,7 +387,11 @@
   w.mcqReview = mcqReview;
   function reviewFallback(rv) {
     return '<b>Let’s go over the questions you missed</b>' + rv.map(function (r, k) {
-      var kb = w.kSearch ? w.kSearch(r.question + ' ' + r.correct)[0] : null;
+      // a related concept from the course notes, never the MCQ question itself (the search index also holds the tests)
+      var norm = function (s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); };
+      var kb = w.kSearch ? (w.kSearch(r.question + ' ' + r.correct) || []).filter(function (h) {
+        return h && h.e && norm(h.e.t) != norm(r.question) && norm(h.e.x) != norm(r.correct);
+      })[0] : null;
       return '<div class="mcq-rv"><b>' + (k + 1) + '. ' + esc(r.question) + '</b><br>✗ Your answer: ' + esc(r.chosen) + '<br>✓ Correct answer: <b>' + esc(r.correct) + '</b>' +
         (kb ? '<br><small>Related concept · <b>' + esc(kb.e.t) + '</b>: ' + esc(String(kb.e.x).slice(0, 220)) + (String(kb.e.x).length > 220 ? '…' : '') + '</small>' : '') + '</div>';
     }).join('') + (rv[0] && rv[0].module ? '<p class="meta" style="margin:8px 0 0">Revisit: ' + esc(rv[0].module) + '</p>' : '') +
@@ -421,8 +429,8 @@
   // the chatbot's "you are eligible for" list (networking course) follows the same milestones
   w.hEligIds = function () {
     if (!w.isEn()) return null; if (!w.myE()[1]) return [];
-    var P = pct(1);
-    return w.JOBS.map(function (j, i) { return i; }).filter(function (i) { return w.jobOn(i) && P >= (isIntern(w.JOBS[i]) ? STAGE.intern : STAGE.career); });
+    var P = pct(1), mine = w.cf(1).jobs; // only the IT Network listings, not other courses' roles
+    return w.JOBS.map(function (j, i) { return i; }).filter(function (i) { return w.jobOn(i) && (!mine || !mine.length || mine.indexOf(i) > -1) && P >= (isIntern(w.JOBS[i]) ? STAGE.intern : STAGE.career); });
   };
   // a finished module no longer pops up "you are eligible": internships and jobs unlock with the milestones
   w.eligPop = function () { swal({ toast: true, position: 'top-end', icon: 'success', title: 'Module completed', timer: 1800, showConfirmButton: false, timerProgressBar: true }); };
@@ -442,7 +450,9 @@
   var PREP_STEPS = [['cv', 'Resume reviewed by your mentor'], ['li', 'LinkedIn profile updated with your capstone'], ['ap', 'Aptitude practice (2 sets)'],
     ['mt', 'Technical mock interview'], ['mh', 'HR mock interview'], ['pf', 'Portfolio: capstone screenshots and report']];
   function prepHtml(ci) {
-    var g = w.lmsG(), st = g.prep || {}, c = w.cf(ci), cp = capOf(c), Q = PREP[ci] || (c.jr || []).slice(0, 4).map(function (r) { return ['Why do you want to work as a ' + r + '?', 'Link your course skills and your capstone to the role.']; });
+    var g = w.lmsG(), st = g.prep || {}, c = w.cf(ci), cp = capOf(c), Q = PREP[ci] || (w.PREP_Q || {})[ci] || (c.jr || []).slice(0, 4).map(function (r) { return ['Why do you want the ' + r + ' role?', 'Link your course skills and your capstone to the role.']; });
+    // add the role questions too, so every course also practises "why this role"
+    if (PREP[ci] || (w.PREP_Q || {})[ci]) Q = Q.concat((c.jr || []).slice(0, 2).map(function (r) { return ['Why do you want the ' + r + ' role?', 'Link your course skills, your capstone and what you enjoy about the work to the role.']; }));
     var done = PREP_STEPS.filter(function (s) { return st[s[0]]; }).length;
     return '<p class="sub">Get ready for interviews: ' + done + ' of ' + PREP_STEPS.length + ' steps done.</p><div class="two"><div class="card"><h3 style="margin-top:0">✅ Placement checklist</h3>' +
       PREP_STEPS.map(function (s) { return '<label class="prep-i"><input type="checkbox" ' + (st[s[0]] ? 'checked ' : '') + 'onchange="prepTick(\'' + s[0] + '\',this.checked)"> ' + esc(s[1]) + '</label>'; }).join('') +

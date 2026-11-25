@@ -32,8 +32,10 @@
   function recIntern(ci) {
     var c = w.cf(ci), e = w.US && w.myE()[ci], P = prog(ci), elig = [], next = null, S = w.STAGE || { intern: 50, career: 60 };
     if (!c || !e) return { eligible: [], next: null, pct: 0 };
-    var roles = ci == 1 && w.JOBS
-      ? w.JOBS.map(function (j, i) { return i; }).filter(w.jobOn).map(function (i) { var j = w.JOBS[i]; return { t: j[0], ty: j[1], intern: /intern|trainee/i.test(j[0] + ' ' + j[1]) }; })
+    // the course's own job board listings (career-content.js); a course without listings uses its job roles
+    var ids = w.JOBS && c.jobs && c.jobs.length ? c.jobs.filter(w.jobOn) : [];
+    var roles = ids.length
+      ? ids.map(function (i) { var j = w.JOBS[i]; return { t: j[0], ty: j[1], intern: /intern|trainee/i.test(j[0] + ' ' + j[1]) }; })
       : (c.jr || []).slice(0, 2).map(function (r) { return { t: r + ' – internship track', ty: 'Openings shared by the placement team', intern: true }; })
         .concat((c.jr || []).map(function (r) { return { t: r, ty: 'Full-time · entry level', intern: false }; }));
     roles.forEach(function (x) {

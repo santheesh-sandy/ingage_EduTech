@@ -278,3 +278,34 @@ test('course cards: Enrolled / In progress / Completed badge sits next to the de
   assert.deepEqual(order.slice(-2), [3, 4], 'Coming soon last');
   for (const e of s.w.document.querySelectorAll('#cl .cc')) assert.ok(e.querySelector('.ctag .pill') && e.querySelector('.price'), 'same parts on every card');
 });
+
+test('view only: every course slide viewer is sandboxed (no new window, no download) and every video hides its download option', async () => {
+  const email = 'vo@test.in';
+  const s0 = await loadSite();
+  const en = {};
+  for (const c of s0.w.cxVis().filter((c) => !c.soon)) en[c.i] = { done: [], amt: 4999, txn: 'T', date: '1/1/2026' };
+  const s = await loadSite({ url: 'https://site.test/#learn', storage: { sf_sess: JSON.stringify({ email, name: 'V', role: 's' }), sf_enr: JSON.stringify({ [email]: en }) } });
+  await sleep(300);
+  for (const ci of Object.keys(en).map(Number)) {
+    const ls = s.w.mods(s.w.cf(ci)).flatMap((m) => m.ls);
+    const deck = ls.find((l) => (l.cx && l.cx.ty == 'doc') || l.pp), vid = ls.find((l) => (l.cx && l.cx.ty == 'video') || l.v);
+    for (const l of [deck, vid].filter(Boolean)) {
+      s.w.LC = ci; s.w.LS = l.id; s.w.LTAB = 'ov'; s.w.renderLearn(); await sleep(20);
+      const lw = s.w.$('lw');
+      for (const f of lw.querySelectorAll('.pv iframe')) {
+        assert.match(f.getAttribute('src'), /view\.officeapps\.live\.com/, 'course ' + ci + ' slides in the Office viewer');
+        const sb = (f.getAttribute('sandbox') || '').split(' ');
+        assert.ok(sb.includes('allow-scripts') && !sb.includes('allow-popups') && !sb.includes('allow-downloads'), 'course ' + ci + ' viewer sandboxed');
+        assert.match(f.getAttribute('src'), /wdDownloadButton=False/);
+        const pv = f.closest('.pv');
+        assert.ok(pv.querySelector('.pv-sh-l') && pv.querySelector('.pv-sh-r'), 'course ' + ci + ': viewer toolbar menu (Download a Copy, Print to PDF) and PowerPoint icon are covered');
+      }
+      for (const v of lw.querySelectorAll('video')) {
+        assert.match(v.getAttribute('controlslist') || '', /nodownload/, 'course ' + ci + ' video has no download');
+        assert.ok(v.hasAttribute('disablepictureinpicture'));
+      }
+      assert.equal(lw.querySelectorAll('a[download], a[href*=".pptx"], a[href*=".mp4"], a[href*=".pdf"]').length, 0, 'course ' + ci + ' no file links');
+    }
+  }
+  assert.deepEqual(s.errors, []);
+});

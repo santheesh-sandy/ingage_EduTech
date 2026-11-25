@@ -6,8 +6,7 @@
  * Files are on Amazon S3 (folder "Internet of Things"):
  *   slides  <base>Slides/<file name>.pptx   (shown in the lesson with the Office Online viewer)
  *   videos  <base>Videos/<file name>.mp4    (played in the site's own player)
- * Note: Parts 11, 13 and 27 have two spaces after the dash in their S3 names; Part 29 was not on S3 when this was written
- * (the lesson shows "not available yet" until it is uploaded).
+ * Note: Parts 11, 13 and 27 have two spaces after the dash in their S3 names, and Part 29 has two spaces before each "&".
  * Loaded before the main script in index.html, so the course list (var C) can use it.
  */
 (function (w) {
@@ -43,7 +42,7 @@
     26: ['Part 26 - Firebase', 'Firebase'],
     27: ['Part 27 -  Kodular Frontend Setup', 'Kodular front-end setup'],
     28: ['Part 28 - Kodular Blocks to Apk', 'Kodular blocks to APK'],
-    29: ['Part 29 - Arduino Installation & HardWare Led ON-OFF & (Trafic Light )', 'Arduino installation, LED on/off and traffic light (hardware)'],
+    29: ['Part 29 - Arduino Installation  & HardWare Led ON-OFF  & (Trafic Light )', 'Arduino installation, LED on/off and traffic light (hardware)'],
     30: ['Part 30 - Arduino + DHT (Hardware)', 'Arduino with DHT sensor (hardware)'],
     32: ['Part 32 - Arduino + Ultrasonic (Hardware)', 'Arduino with ultrasonic sensor (hardware)'],
     33: ['Part 33 - Radar - Servo - Ultrasonic (Hardware)', 'Radar with servo and ultrasonic sensor (hardware)'],

@@ -186,6 +186,21 @@ test('without the AI, the chatbot still shows the correct answers and a related 
   assert.ok(t.includes('Correct answer: ' + set[1][1][set[1][2]]));
   assert.match(t, /Revisit: Module 1/);
   assert.equal(s.calls.length, 0);
+  // the "related concept" is course material, never the same MCQ question repeated back
+  for (const x of set.slice(1)) assert.ok(!t.includes('Related concept · ' + x[0]), 'question echoed as its own concept: ' + x[0]);
+});
+
+test('My Learning still opens for an enrolment saved without a payment amount', async () => {
+  const email = 'noamt@test.in';
+  const s = await loadSite({ url: 'https://site.test/#learn', storage: { sf_sess: JSON.stringify({ email, name: 'N', role: 's' }), sf_enr: JSON.stringify({ [email]: { 12: { done: [] } } }) } });
+  await sleep(300);
+  s.w.LC = 12; s.w.LTAB = 'res'; s.w.renderLearn(); await sleep(50);
+  const lw = s.w.$('lw');
+  assert.match(lw.textContent, /Computer Network through LAN & WAN/);
+  assert.match(lw.textContent, /No payment receipt for this enrolment/);
+  assert.ok(!/NaN|undefined/.test(lw.textContent), 'no NaN/undefined shown');
+  assert.equal(s.w.fee(undefined), '₹0');
+  assert.deepEqual(s.errors, []);
 });
 
 test('the AI may explain only questions that were already submitted', () => {

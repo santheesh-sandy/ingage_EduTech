@@ -1,9 +1,12 @@
 /* ingage EduTech – course slides and videos
  * Main source: Amazon S3 (bucket ingage-lms, ap-south-1), same folder layout as the local files:
- *   <s3>/slides/M1-1.pptx   <s3>/slides/pdf/M1-1.pdf   <s3>/videos/<video name>.mp4
+ *   <s3>/slides/M1-1.pptx (shown in the view-only Office slide viewer)   <s3>/videos/<video name>.mp4
+ *   (<s3>/slides/pdf/M1-1.pdf copies are kept on S3 but no longer shown: a browser PDF viewer can always save the file)
  *   where <s3> = https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/
  *   Video names are the lesson's video path (MD in index.html) + ".mp4".
- * Fallback: Google Drive (ids below), used for any video that S3 does not have.
+ * Google Drive fallback (ids below): OFF. In Nov 2026 every Drive video id answered "Page not found", and S3 has all
+ *   25 videos, so a video that fails on S3 shows the "not available yet" note instead of a broken Drive page.
+ *   The ids still give the readable video titles. Set driveFallback: true again only if the Drive files are shared again.
  *   Slides:  https://drive.google.com/drive/folders/1nHlmdKS4JG8qha2oZE8uQ81uNbpjILp1  (PPTX + pdf/ subfolder)
  *   Videos:  https://drive.google.com/drive/folders/1rgQHxH3ty9FciwXc7lhAHVOdHt9-V-Ko
  * To use files hosted next to index.html instead (slides/…, videos/…), set DRIVE_MEDIA.on = false.
@@ -12,6 +15,7 @@
   'use strict';
   var DM = (w.DRIVE_MEDIA = {
     on: true,
+    driveFallback: false,
     s3: 'https://ingage-lms.s3.ap-south-1.amazonaws.com/IT+Network+System+Administrator/',
     // deck id → [PPTX file id, PDF file id]
     slides: {
@@ -100,14 +104,22 @@
     lw.querySelectorAll('.pv iframe').forEach(function (f) {
       var k = DM.deckOf(f.getAttribute('src'));
       if (!k) return;
-      f.src = DM.s3Slide(k, 1) + '#toolbar=0&navpanes=0&view=FitH';
-      f.setAttribute('allow', 'fullscreen');
+      // the deck (PPTX on S3) in the same view-only slide viewer as every other course: Office Online in a sandbox,
+      // so there is no save/download (a PDF in the browser's PDF viewer can always be saved with Ctrl+S)
+      var e = w.cxEmbed && w.cxEmbed(DM.s3Slide(k));
+      if (e && e.f && w.DECK_SBX) {
+        f.setAttribute('sandbox', w.DECK_SBX); f.src = e.f;
+        if (w.DECK_SHIELD && !f.parentNode.querySelector('.pv-sh')) f.insertAdjacentHTML('afterend', w.DECK_SHIELD); // cover the menu with "Download a Copy"
+      }
+      else f.src = (w.deckV ? w.deckV(DM.s3Slide(k, 1)) : DM.s3Slide(k, 1)) + '#toolbar=0&navpanes=0&view=FitH';
+      f.setAttribute('allow', 'autoplay; fullscreen');
+      f.setAttribute('allowfullscreen', '');
       f.setAttribute('loading', 'lazy');
     });
     lw.querySelectorAll('video.uv[data-p]').forEach(function (v) { // IT Network lessons only (other courses use full links)
       var p = v.getAttribute('data-p');
       v.removeAttribute('onerror');
-      v.onerror = function () { driveBox(v); }; // not on S3 → Google Drive player
+      v.onerror = function () { driveBox(v); }; // not on S3 → "not available yet" note (or the Drive player if driveFallback)
       v.src = DM.s3Video(p);
       var hit = DM.videoOf(p), hd = v.previousElementSibling; // readable part titles ("Part 1 of 2: Static routing")
       if (hit && hd && hd.tagName == 'H4' && /^Part \d+ of \d+:/.test(hd.textContent)) hd.textContent = hd.textContent.replace(/:.*$/, ': ' + hit[1]);
@@ -116,7 +128,10 @@
   function driveBox(v) {
     var hit = DM.videoOf(v.getAttribute('data-p'));
     if (!v.parentNode) return;
-    if (!hit) { if (w.vidMiss) { v.setAttribute('data-t', '99'); w.vidMiss(v); } return; }
+    if (!hit || !DM.driveFallback) { // learner-facing note (the same one the other courses show)
+      if (w.cxVidMiss) w.cxVidMiss(v); else if (w.vidMiss) { v.setAttribute('data-t', '99'); w.vidMiss(v); }
+      return;
+    }
     {
       var box = d.createElement('div');
       box.className = 'dv';

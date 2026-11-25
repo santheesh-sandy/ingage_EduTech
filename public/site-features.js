@@ -158,6 +158,12 @@
     10: { tech: ['Arduino and ESP32', 'Sensors and actuators', 'Blynk IoT dashboards', 'ThingSpeak and MATLAB analysis', 'MQTT, HiveMQ and Node-RED', 'Firebase, Kodular apps, Twilio and Convai'],
       why: 'Factories, farms, homes, hospitals and cities are adding connected sensors to save energy, prevent breakdowns and act on live data. Companies need people who can wire sensors, program boards and get the data to the cloud and to a phone.',
       apps: ['Smart homes and buildings: lights, security and energy monitoring', 'Machine and environment monitoring in factories', 'Smart farming: soil, water and weather sensing', 'Gas, fire and intrusion alerts by SMS or call'] },
+    11: { tech: ['Cat6 copper cabling and RJ45 termination', 'Optical fibre, LC/SC connectors and OTDR', 'Cable testers and certification', 'draw.io network diagrams', 'Cisco Packet Tracer: routing, VLANs, HSRP, ASA', 'iPerf3, Wireshark and Grafana'],
+      why: 'Every new office, data centre, hospital, campus and 5G site needs its cabling installed, tested and documented before the network can run. Telecom companies, integrators and building projects hire technicians who can terminate, test and certify copper and fibre and get the network working.',
+      apps: ['Cabling new offices, schools and hospitals', 'Fibre backbones and data centre racks', 'Telecom and cell tower links', 'Fault finding, testing and network monitoring for IT teams'] },
+    12: { tech: ['OSI and TCP/IP models', 'Cisco Packet Tracer', 'Switching, subnetting and VLANs', 'Static routing, OSPF and BGP basics', 'WAN, SD-WAN and VPN', 'Cisco ASA firewall, NAT and troubleshooting tools'],
+      why: 'Banks, retail chains, hospitals and IT companies run offices in many cities that must stay connected and secure. They need engineers who can build LANs, link sites over WANs and VPNs, keep routing working and fix problems quickly.',
+      apps: ['Office and campus LANs with VLANs', 'Connecting branches to head office over WAN and VPN', 'Firewalls protecting company networks', 'Network operations centres (NOC) monitoring and fixing faults'] },
   };
   w.COURSE_INFO = COURSE_INFO;
   var PLACEMENT = {

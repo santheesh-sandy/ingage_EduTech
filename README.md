@@ -72,11 +72,18 @@ Each has its own file with the curriculum, 5-question MCQ tests, capstone projec
 `public/pcb-course.js` (course 2, PCB Design & Testing — replaced 3D Modeling with LiDAR; videos in `PCB Design/Videos/` and
 `PCB Design/Videos/Kicad/`), `public/dt-course.js` (course 5, Digital Twin, folder `Digital_Twin`), `public/ev-course.js` (course 8),
 `public/robot-course.js` (course 9, Industrial Robot Programming and Operations) and `public/iot-course.js` (course 10, Internet of
-Things: 15 modules, 37 decks and 32 videos matched to modules by topic).
+Things: 15 modules, 37 decks and 32 videos matched to modules by topic) and `public/cabling-course.js` (course 11, Information
+Network Cabling: 15 modules, 39 decks, 16 lab videos and 3 hardware videos in `Videos/Hardware/`) and
+`public/lanwan-course.js` (course 12, Computer Network through LAN & WAN: 10 modules, 29 decks, 12 videos).
 Course card details (careers, pay, industries) are in `index.html` (`C`, `AIDEF`, `AISAL`), page sections in `site-features.js`
 (`COURSE_INFO`), career roles in `role-skills.js`, and chatbot keywords for each course in `index.html` (`KW`, `AIINT`).
 
 ## Course slides & videos (Amazon S3)
+
+**Replacing slide decks:** upload the new file over the old one on S3 (same folder and name), then change `DECK_V` in
+`public/index.html` (for example to today's date) and redeploy. Every slide link gets `?v=<DECK_V>`, so the Office viewer
+and browsers load the new file instead of a cached copy. Partner-logo-free decks (Nov 2026) are kept locally in
+`cleaned-decks/` (git-ignored): `upload-to-s3/` mirrors the bucket, `originals-backup/` holds the files as they were.
 
 `public/drive-media.js` loads every lesson of *IT Network System Administrator* from the S3 bucket `ingage-lms` (ap-south-1),
 folder `IT Network System Administrator/`:
