@@ -550,3 +550,35 @@
     if (t && t.closest && t.closest('#lw .pv, #lw video')) e.preventDefault();
   }, true);
 })(document);
+
+/* =====================================================================
+ *  Scrolling in My Learning
+ *  - re-rendering a lesson keeps the "Course content" list where it was (it used to jump back to lesson 1)
+ *    and keeps the current lesson visible in it
+ *  - the clear layer over a slide (DECK_SCROLL) comes back when the mouse leaves the viewer, so the wheel
+ *    scrolls the page again
+ * ===================================================================== */
+(function (w, d) {
+  'use strict';
+  var _rl = w.renderLearn;
+  w.renderLearn = function () {
+    var u = d.querySelector('#lw .us'), top = u ? u.scrollTop : 0;
+    var r = _rl.apply(this, arguments);
+    var n = d.querySelector('#lw .us');
+    if (n && n.scrollHeight > n.clientHeight + 4) { // only when the list scrolls on its own (desktop)
+      n.scrollTop = top;
+      var c = n.querySelector('.ur.on');
+      if (c) {
+        var head = n.querySelector('.ush'), nr = n.getBoundingClientRect(), cr = c.getBoundingClientRect();
+        var from = nr.top + (head ? head.offsetHeight : 0);
+        if (cr.top < from || cr.bottom > nr.bottom) n.scrollTop += cr.top - from - Math.max(0, (nr.bottom - from - cr.height) / 3);
+      }
+    }
+    return r;
+  };
+  d.addEventListener('mouseover', function (e) {
+    var t = e.target;
+    if (t && t.closest && t.closest('.pv')) return;
+    d.querySelectorAll('.pv-scroll.off').forEach(function (x) { x.classList.remove('off'); });
+  });
+})(window, document);

@@ -66,6 +66,18 @@ Lesson titles come from the file names; modules 8–10 reuse the Day-6 slides (A
 Course card details (careers, pay ranges, industries) are in `index.html` (`C`, `AIDEF`, `AISAL`), the course page sections
 in `public/site-features.js` (`COURSE_INFO[7]`) and the chatbot career map in `public/role-skills.js`.
 
+## Courses added in Admin → Courses (saved online)
+
+Courses added or edited in **Admin → Courses** (name, picture, fee, status, modules, lessons with slide/video links, MCQs,
+careers) are saved to the Supabase table `public.site_courses` (`supabase/migrations/20261125090000_site_courses.sql`,
+part of `npm run db:push`). Every visitor's browser reads that table on load (`public/course-sync.js`), so the course
+appears for all learners. Only staff (a row in `public.staff`) can write; visitors and learners can only read.
+- Sign in to Admin with your **staff account** (Supabase). The course list then says *Saved online*. In demo mode
+  (no Supabase) it says *Saved in this browser only*, as before.
+- Changes made earlier that were only in your browser are uploaded the next time staff open the Admin dashboard.
+- New Admin courses get numbers from 101, so they never clash with courses added in code (1, 2, 3 …).
+- Courses in the code (`public/*-course.js`) still load first; an online copy only adds to or overrides them.
+
 ## Other courses built from S3 files
 
 Each has its own file with the curriculum, 5-question MCQ tests, capstone projects (`w.CAPS[id]`) and, where given, the card picture:
@@ -74,7 +86,18 @@ Each has its own file with the curriculum, 5-question MCQ tests, capstone projec
 `public/robot-course.js` (course 9, Industrial Robot Programming and Operations) and `public/iot-course.js` (course 10, Internet of
 Things: 15 modules, 37 decks and 32 videos matched to modules by topic) and `public/cabling-course.js` (course 11, Information
 Network Cabling: 15 modules, 39 decks, 16 lab videos and 3 hardware videos in `Videos/Hardware/`) and
-`public/lanwan-course.js` (course 12, Computer Network through LAN & WAN: 10 modules, 29 decks, 12 videos).
+`public/lanwan-course.js` (course 12, Computer Network through LAN & WAN: 10 modules, 29 decks, 12 videos) and
+`public/ada-course.js` (course 13, Advanced Data Analytics using Python & Visualization: 7 modules, 21 decks, 6 videos;
+the S3 folder is spelled "Advanced Data Analytics using Python, Visulaization") and `public/i40-course.js` (course 14,
+Industry 4.0 & 5.0: 10 modules, 26 decks, task videos 1-10 in the S3 folder "Industry 4.0 & 5.0") and
+`public/ne-course.js` (course 15, Network Essentials: 10 modules, 24 decks, 8 videos, video n in module n) and
+`public/isi-course.js` (course 16, IoT & Sensor Integration, Applications (ESP32): 15 modules, 31 decks, 34 videos). Its videos
+are the same files as the Internet of Things course; a lesson can carry an `alt` link, and the player falls back to that copy
+while a video is not yet in the course's own folder. `public/dm-course.js` (course 17, Digital Marketing, 80 hours:
+23 modules, 47 decks, 52 Tamil videos; videos 9-25 are named "9.mp4" … "25.mp4"; modules 21-23 hold the practical videos).
+Coming soon (no lessons yet): courses 18-22, Architectural Visualization, Industrial Metaverse, Game Development, Graphic Design
+and Data Warehousing. Their pictures and future S3 folders are in `public/upcoming-courses.js`; when the slides and videos are
+uploaded, add a curriculum file for the course and remove `soon:1` from its entry in `index.html`.
 Course card details (careers, pay, industries) are in `index.html` (`C`, `AIDEF`, `AISAL`), page sections in `site-features.js`
 (`COURSE_INFO`), career roles in `role-skills.js`, and chatbot keywords for each course in `index.html` (`KW`, `AIINT`).
 

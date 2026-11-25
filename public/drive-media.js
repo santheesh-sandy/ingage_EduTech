@@ -109,7 +109,7 @@
       var e = w.cxEmbed && w.cxEmbed(DM.s3Slide(k));
       if (e && e.f && w.DECK_SBX) {
         f.setAttribute('sandbox', w.DECK_SBX); f.src = e.f;
-        if (w.DECK_SHIELD && !f.parentNode.querySelector('.pv-sh')) f.insertAdjacentHTML('afterend', w.DECK_SHIELD); // cover the menu with "Download a Copy"
+        if (w.DECK_SHIELD && !f.parentNode.querySelector('.pv-sh')) f.insertAdjacentHTML('afterend', w.DECK_SHIELD + (w.DECK_SCROLL || '')); // cover the menu with "Download a Copy"; let the wheel scroll the page
       }
       else f.src = (w.deckV ? w.deckV(DM.s3Slide(k, 1)) : DM.s3Slide(k, 1)) + '#toolbar=0&navpanes=0&view=FitH';
       f.setAttribute('allow', 'autoplay; fullscreen');

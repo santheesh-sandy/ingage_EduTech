@@ -26,7 +26,7 @@ w.mods(w.cf(1)).forEach((m, mi) => m.ls.forEach((l) => lessons.push({ ...l, mod:
 // courses built from a curriculum (e.g. Cyber Security Essentials): every slide/video lesson with a link
 const cur = [];
 w.C.filter((c) => c.cur && c.cur.length).forEach((c) => c.cur.forEach((m, mi) => m.ls.forEach((x) => {
-  if (x.url && (x.ty == 'doc' || x.ty == 'video')) cur.push({ name: c.t + ' · M' + (mi + 1) + ' · ' + x.t, ty: x.ty, url: x.url });
+  if (x.url && (x.ty == 'doc' || x.ty == 'video')) cur.push({ name: c.t + ' · M' + (mi + 1) + ' · ' + x.t, ty: x.ty, url: x.url, alt: x.alt });
 })));
 w.close();
 
@@ -72,7 +72,10 @@ for (const l of lessons) {
 }
 for (const x of cur) {
   const kind = x.ty == 'video' ? 'mp4' : /\.pdf(\?|$)/i.test(x.url) ? 'pdf' : 'pptx';
-  jobs.push({ name: x.name, what: x.ty == 'video' ? 'video' : 'slides ' + kind.toUpperCase(), url: x.url, run: () => probe(x.url, kind) });
+  jobs.push({ name: x.name, what: x.ty == 'video' ? 'video' : 'slides ' + kind.toUpperCase(), url: x.url, run: async () => { // a lesson with a backup copy ("alt") still plays if the main file is missing
+    const p = await probe(x.url, kind); if (p.ok || !x.alt) return p;
+    const a = await probe(x.alt, kind); return a.ok ? { ok: true, via: 'backup copy', warn: 'own folder: ' + p.why } : { ok: false, why: p.why + '; backup: ' + a.why };
+  } });
 }
 // also check every Drive video id on its own, so the fallbacks are known good before they are needed
 // (only while the Drive fallback is switched on in public/drive-media.js)
@@ -89,5 +92,5 @@ jobs.forEach((j, i) => {
   const tag = !r.ok ? 'FAIL' : r.warn ? 'WARN' : ' ok ';
   console.log(`[${tag}] ${j.name} — ${j.what}${r.via ? ' (' + r.via + ')' : ''}${r.size ? ' ' + r.size : ''}${r.why ? ' — ' + r.why : ''}${r.warn ? ' — ' + r.warn : ''}${!r.ok || r.warn ? '\n        ' + j.url : ''}`);
 });
-console.log(`\n${jobs.length} checks: ${jobs.length - bad - warn} ok, ${warn} played from the Drive fallback, ${bad} failed.`);
+console.log(`\n${jobs.length} checks: ${jobs.length - bad - warn} ok, ${warn} played from a backup copy, ${bad} failed.`);
 process.exit(bad ? 1 : 0);

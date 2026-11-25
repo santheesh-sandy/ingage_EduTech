@@ -23,7 +23,7 @@ export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * @param {object} [o.storage]   localStorage seed
  * @param {{url:string,key:string}} [o.supabase]  CFG.supabase for the page (default: off, so tests never reach the real project)
  */
-export async function loadSite({ chatApi = 'https://mock.test/chat', ai, url = 'https://site.test/#home', storage = {}, session = {}, teaserMs = 600000, supabase = { url: '', key: '' } } = {}) {
+export async function loadSite({ chatApi = 'https://mock.test/chat', ai, net, url = 'https://site.test/#home', storage = {}, session = {}, teaserMs = 600000, supabase = { url: '', key: '' } } = {}) {
   let html = HTML.replace(/var CFG=\{supabase:\{url:'[^']*',key:'[^']*'\}/, () => 'var CFG={supabase:' + JSON.stringify(supabase))
     .replace("var CHAT_API='';", 'var CHAT_API=' + JSON.stringify(chatApi) + ';')
     .replace(/<script src="https?:[^"]+"><\/script>/g, '')
@@ -39,7 +39,9 @@ export async function loadSite({ chatApi = 'https://mock.test/chat', ai, url = '
       for (const [k, v] of Object.entries(session)) w.sessionStorage.setItem(k, v);
       w.AITEASER_MS = teaserMs;
       w.open = () => null;
-      w.fetch = async (u, o) => {
+      w.fetch = async (u, o = {}) => {
+        if (net) { const r = await net(String(u), o); if (r) return r; } // other requests (e.g. Supabase REST) answered by the test
+        if (!o.body) return { ok: false, status: 404, json: async () => ({}) };
         const body = JSON.parse(o.body); calls.push({ url: u, body, headers: o.headers });
         const r = (await (ai || defaultAi)(body)) || {};
         const status = r.status || 200;

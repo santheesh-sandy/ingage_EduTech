@@ -256,7 +256,7 @@ test('courses page: an enrolled course says "Continue learning"', async () => {
   const prices = [...s.w.document.querySelectorAll('#courses .price')].map(text);
   assert.ok(prices.includes('Continue learning →'), prices.join('|'));
   assert.equal(prices.filter((p) => /Coming soon/.test(p)).length, s.w.cxVis().filter((c) => c.soon).length, 'one "Coming soon" per course that is not open');
-  assert.deepEqual([...s.w.cxVis().filter((c) => c.soon).map((c) => c.i)], [3, 4], 'only Terrain LiDAR and AR/VR are coming soon');
+  assert.deepEqual([...s.w.cxVis().filter((c) => c.soon).map((c) => c.i)], [3, 4, 18, 19, 20, 21, 22], 'coming soon: Terrain LiDAR, AR/VR and the five announced courses');
 });
 
 test('course cards: Enrolled / In progress / Completed badge sits next to the department pill on every card', async () => {
@@ -275,7 +275,8 @@ test('course cards: Enrolled / In progress / Completed badge sits next to the de
   assert.deepEqual(st(8), ['', 'Enroll now →']);
   const order = [...s.w.document.querySelectorAll('#cl .cc')].map((e) => +e.getAttribute('onclick').match(/\d+/)[0]);
   assert.deepEqual(order.slice(0, 3), [6, 9, 7], 'Completed, then In progress, then Enrolled');
-  assert.deepEqual(order.slice(-2), [3, 4], 'Coming soon last');
+  const soon = s.w.cxVis().filter((c) => c.soon).length;
+  assert.ok(order.slice(-soon).every((i) => s.w.cf(i).soon) && !order.slice(0, -soon).some((i) => s.w.cf(i).soon), 'Coming soon last');
   for (const e of s.w.document.querySelectorAll('#cl .cc')) assert.ok(e.querySelector('.ctag .pill') && e.querySelector('.price'), 'same parts on every card');
 });
 
@@ -308,4 +309,44 @@ test('view only: every course slide viewer is sandboxed (no new window, no downl
     }
   }
   assert.deepEqual(s.errors, []);
+});
+
+test('scrolling: picking a lesson shows the lesson (not the page top) and the slide viewer does not trap the mouse wheel', async () => {
+  const email = 'sc@test.in';
+  const s = await loadSite({ url: 'https://site.test/#learn', storage: { sf_sess: JSON.stringify({ email, name: 'S', role: 's' }), sf_enr: JSON.stringify({ [email]: { 13: { done: [], amt: 4999, txn: 'T', date: '1/1/2026' } } }) } });
+  await sleep(300);
+  const w = s.w, calls = [];
+  w.scrollTo = (...a) => calls.push(a);
+  w.LC = 13; w.renderLearn(); await sleep(20);
+  const ls = w.mods(w.cf(13)).flatMap((m) => m.ls);
+  // lesson already on screen (under the header): picking another lesson must not jump anywhere
+  w.Element.prototype.getBoundingClientRect = function () { return { top: this.classList && this.classList.contains('um') ? 150 : 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 }; };
+  w.pick(ls[0].id);
+  assert.equal(calls.length, 0, 'no jump when the lesson is already in view');
+  // lesson scrolled far above: picking brings it back under the header, never to the very top of the page
+  w.Element.prototype.getBoundingClientRect = function () { return { top: this.classList && this.classList.contains('um') ? -2000 : 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 }; };
+  Object.defineProperty(w, 'scrollY', { value: 3000, configurable: true });
+  w.pick(ls[0].id);
+  assert.equal(calls.length, 1);
+  assert.ok(calls[0][1] > 0 && calls[0][1] < 3000, 'scrolls up to the lesson: ' + calls[0][1]);
+  // slide viewer: clear layer over the slide; a click hands the slide to the viewer, leaving the viewer re-arms it
+  const sc = w.$('lw').querySelector('.pv .pv-scroll');
+  assert.ok(sc, 'wheel layer present');
+  sc.click(); assert.ok(sc.classList.contains('off'));
+  w.$('lw').querySelector('.ult').dispatchEvent(new w.MouseEvent('mouseover', { bubbles: true }));
+  assert.ok(!sc.classList.contains('off'), 're-armed after the mouse leaves the viewer');
+  const css = [...w.document.querySelectorAll('style')].map((x) => x.textContent).join('');
+  assert.match(css, /\.us,\.ai-msgs\{overscroll-behavior:contain\}/);
+  assert.match(css, /#rsp\{max-height:calc\(100vh - 110px\);overflow:auto/);
+  assert.deepEqual(s.errors, []);
+});
+
+test('home page numbers follow the course list (course count and shortest–longest hours)', async () => {
+  const s = await loadSite();
+  await sleep(50);
+  const V = s.w.cxVis(), hs = V.map((c) => c.h);
+  const want = Math.min(...hs) + '–' + Math.max(...hs);
+  for (const b of s.w.document.querySelectorAll('.nhrs')) assert.equal(b.textContent, want);
+  for (const b of s.w.document.querySelectorAll('.ncrs')) assert.equal(b.textContent, String(V.length));
+  assert.equal(want, '40–80', 'Digital Marketing is 80 hours');
 });

@@ -15,7 +15,7 @@
     "deploy:fn": "node scripts/deploy-fn.mjs",
     "check-ai": "node scripts/check-ai.mjs",
     "check-media": "node scripts/check-media.mjs",
-    "db:push": "node scripts/sb-sql.mjs supabase/migrations/20261120090000_learner_data.sql && node scripts/sb-sql.mjs supabase/migrations/20261120120000_resumes.sql",
+    "db:push": "node scripts/sb-sql.mjs supabase/migrations/20261120090000_learner_data.sql && node scripts/sb-sql.mjs supabase/migrations/20261120120000_resumes.sql && node scripts/sb-sql.mjs supabase/migrations/20261125090000_site_courses.sql",
     "gold": "node scripts/gold-eval.mjs"
   },
   "devDependencies": {

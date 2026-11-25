@@ -1,5 +1,5 @@
 /* ingage EduTech – Internet of Things curriculum (course 10)
- * 15 modules · 37 slide decks ("Module_NN_…_PartN") · 32 videos ("Part 1 … 34"; there is no Part 24 or 31)
+ * 15 modules · 37 slide decks ("Module_NN_…_PartN") · 34 videos ("Part 1 … 34"; Part 24 and 31 are named "Part24 - …" and "31 - …" on S3)
  * · one 5-question MCQ test per module · 5 capstone projects.
  * Each module shows its decks first, then the videos on the same topic. The video names do not give a module,
  * so they are matched to the module by topic (change the part numbers in a module to move a video).
@@ -38,12 +38,14 @@
     21: ['Part 21 - Thingspeak to Twilio', 'ThingSpeak to Twilio'],
     22: ['Part 22 - MQTT - Hive MQ', 'MQTT and HiveMQ'],
     23: ['Part 23 - MQTT to Hive MQ', 'MQTT to HiveMQ'],
+    24: ['Part24 - Hive MQ to NODE RED', 'HiveMQ to Node-RED'],
     25: ['Part 25 - Hive MQ to Node Red to Firebase', 'HiveMQ to Node-RED to Firebase'],
     26: ['Part 26 - Firebase', 'Firebase'],
     27: ['Part 27 -  Kodular Frontend Setup', 'Kodular front-end setup'],
     28: ['Part 28 - Kodular Blocks to Apk', 'Kodular blocks to APK'],
     29: ['Part 29 - Arduino Installation  & HardWare Led ON-OFF  & (Trafic Light )', 'Arduino installation, LED on/off and traffic light (hardware)'],
     30: ['Part 30 - Arduino + DHT (Hardware)', 'Arduino with DHT sensor (hardware)'],
+    31: ['31 - Flame-Moisture-Gas - Arduino (Hardware)', 'Flame, moisture and gas sensors with Arduino (hardware)'],
     32: ['Part 32 - Arduino + Ultrasonic (Hardware)', 'Arduino with ultrasonic sensor (hardware)'],
     33: ['Part 33 - Radar - Servo - Ultrasonic (Hardware)', 'Radar with servo and ultrasonic sensor (hardware)'],
     34: ['Part 34 - AI + IOT', 'AI + IoT'],
@@ -110,7 +112,7 @@
       ['HiveMQ is an example of…', ['A sensor', 'A mobile app builder', 'An MQTT broker', 'A microcontroller'], 2],
       ['An MQTT topic such as home/room1/temp is…', ['A Wi-Fi network name', 'A password', 'A file stored on the ESP32', 'The address that messages are published and subscribed on'], 3],
       ['Why is MQTT popular for IoT?', ['It needs large video files', 'It is lightweight and works on slow or unstable networks', 'It only works offline', 'It replaces sensors'], 1]]],
-    ['MQTT pipelines with Node-RED and Firebase', 'Module_11_MQTT_Pipelines_with_Node_RED_Firebase', 2, [23, 25], [
+    ['MQTT pipelines with Node-RED and Firebase', 'Module_11_MQTT_Pipelines_with_Node_RED_Firebase', 2, [23, 24, 25], [
       ['Node-RED is…', ['A red status LED', 'An MQTT QoS level', 'A database', 'A flow-based tool for wiring devices, APIs and services together'], 3],
       ['In Node-RED, an “mqtt in” node…', ['Subscribes to a topic and passes its messages into the flow', 'Sends an SMS', 'Draws a PCB', 'Charges the battery'], 0],
       ['A Node-RED flow is built by…', ['Writing assembly code', 'Connecting nodes with wires in the browser editor', 'Soldering', 'Recording a video'], 1],
@@ -128,7 +130,7 @@
       ['Before installing your own APK, Android may ask you to…', ['Allow installs from unknown sources for that app', 'Delete WhatsApp', 'Buy a licence', 'Root the phone'], 0],
       ['On an Arduino Uno, the built-in LED is on pin…', ['0', 'A5', '13', '22'], 2],
       ['In a traffic light project, the light sequence is controlled by…', ['The power supply', 'The breadboard colour', 'The Wi-Fi signal', 'Timed digitalWrite() calls in the loop'], 3]]],
-    ['Arduino hardware sensor projects', 'Module_14_Arduino_Hardware_Sensor_Projects', 2, [30, 32], [
+    ['Arduino hardware sensor projects', 'Module_14_Arduino_Hardware_Sensor_Projects', 2, [30, 31, 32], [
       ['To read a DHT11 on an Arduino you usually…', ['Use analogWrite() only', 'Install a DHT library and call readTemperature() and readHumidity()', 'Use Twilio', 'Use Kodular'], 1],
       ['In the ultrasonic project, the Trig pin is…', ['Set HIGH for about 10 µs to send a sound pulse', 'The input that receives the echo', 'Ground', 'The 5 V supply'], 0],
       ['pulseIn() on the Echo pin measures…', ['Temperature', 'Humidity', 'How long the echo pin stays HIGH', 'Gas level'], 2],

@@ -335,3 +335,19 @@ body.ai-open .ai-fab:after{color:#fff}
 .pv-sh-r{right:0;width:96px}
 .pv:fullscreen{display:flex;flex-direction:column;background:#000}.pv:fullscreen iframe{height:100%;min-height:0;flex:1}
 .pv:-webkit-full-screen iframe{height:100%;min-height:0}
+
+/* ===== scrolling ===== */
+/* nested scroll areas stop at their end instead of dragging the page along */
+.us,.ai-msgs{overscroll-behavior:contain}
+/* resume preview: when it is taller than the screen it scrolls on its own, so its end can always be read */
+@media(min-width:821px){#rsp{max-height:calc(100vh - 110px);overflow:auto;overscroll-behavior:contain}}
+/* slide viewer: a clear layer lets the mouse wheel scroll the page; one click hands the slide to the viewer */
+.pv-scroll{position:absolute;left:0;right:0;top:0;bottom:26px;z-index:2;display:block;cursor:pointer}
+.pv-scroll.off{pointer-events:none}
+.pv-scroll:not(.off):hover::after{content:'Click to use the slides';position:absolute;top:10px;right:10px;background:rgba(17,24,39,.78);color:#fff;font:600 12px/1 Inter,Arial,sans-serif;padding:7px 10px;border-radius:999px;pointer-events:none}
+.pv:fullscreen .pv-scroll,.pv:-webkit-full-screen .pv-scroll{display:none}
+
+/* Admin → Courses: where course changes are saved */
+.cx-sync{padding:10px 14px;border-radius:12px;margin:0 0 14px;font-size:14px;line-height:1.5}
+.cx-sync.ok{background:rgba(141,198,63,.14);border:1px solid rgba(141,198,63,.45)}
+.cx-sync.warn{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.45)}

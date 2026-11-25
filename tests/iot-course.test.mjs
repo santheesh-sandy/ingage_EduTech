@@ -1,11 +1,11 @@
-// Internet of Things (course 10): 32 videos from S3 (slides come later), MCQ tests, capstones, careers, chatbot.
+// Internet of Things (course 10): 37 decks and 34 videos from S3, MCQ tests, capstones, careers, chatbot.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadSite, sleep } from './helpers.mjs';
 
 const B = 'https://ingage-lms.s3.ap-south-1.amazonaws.com/Internet+of+Things/';
 
-test('the IoT course is open with 15 modules, 37 decks, 32 videos and an MCQ test per module', async () => {
+test('the IoT course is open with 15 modules, 37 decks, 34 videos and an MCQ test per module', async () => {
   const s = await loadSite();
   const c = s.w.cf(10);
   assert.equal(c.t, 'Internet of Things');
@@ -19,10 +19,11 @@ test('the IoT course is open with 15 modules, 37 decks, 32 videos and an MCQ tes
   assert.equal(decks[0], B + 'Slides/Module_01_Introduction_to_IoT_First_Program_Part1.pptx');
   assert.equal(decks.at(-1), B + 'Slides/Module_15_Radar_System_AI_IoT_Part3.pptx');
   const vids = all.filter((l) => l.cx && l.cx.ty == 'video');
-  assert.deepEqual([...ms.map((m) => m.ls.filter((l) => l.cx && l.cx.ty == 'video').length)], [2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2]);
+  assert.deepEqual([...ms.map((m) => m.ls.filter((l) => l.cx && l.cx.ty == 'video').length)], [2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 3, 2, 2, 3, 2]);
   const parts = vids.map((l) => +l.t.match(/Part (\d+)/)[1]);
-  assert.deepEqual([...parts], Array.from({ length: 34 }, (_, i) => i + 1).filter((n) => n != 24 && n != 31));
-  assert.equal(new Set(vids.map((l) => l.cx.url)).size, 32);
+  assert.deepEqual([...parts].sort((a, b) => a - b), Array.from({ length: 34 }, (_, i) => i + 1));
+  assert.ok(vids.some((l) => l.cx.url == B + "Videos/Part24+-+Hive+MQ+to+NODE+RED.mp4") && vids.some((l) => l.cx.url == B + "Videos/31+-+Flame-Moisture-Gas+-+Arduino+(Hardware).mp4"), "Part 24 and 31 use their S3 names");
+  assert.equal(new Set(vids.map((l) => l.cx.url)).size, 34);
   assert.equal(vids[0].cx.url, B + 'Videos/Part+1+-+Intro.mp4');
   assert.equal(vids[12].cx.url, B + 'Videos/Part+13+-++Blynk+Mobile+Setup.mp4', 'two spaces after the dash on S3');
   assert.equal(vids.at(-1).cx.url, B + 'Videos/Part+34+-+AI+%2B+IOT.mp4');
