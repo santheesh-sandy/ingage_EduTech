@@ -50,7 +50,7 @@
       biz: "Games are a large and growing business, and game skills are also used in training, simulation, AR/VR and marketing. Studios hire people who can deliver a playable, fun and stable game. The course follows a real game project: design, prototype, build, polish and publish." },
     21: { intro: "A practical course in visual design: design principles, colour and typography, Photoshop, Illustrator and Canva, logos and brand identity, social media creatives, print design and building a portfolio.",
       biz: "Strong visuals make people notice, trust and remember a brand. Businesses pay for design that is clear, consistent and ready for print and screens. The course follows a real brief: understand the brand, sketch ideas, design, refine and deliver the files." },
-    22: { intro: "A course in organising company data for reporting: data warehouse concepts, SQL, dimensional modelling, ETL/ELT pipelines, cloud warehouses such as Snowflake, BigQuery and Redshift, and BI dashboards with Power BI or Tableau.",
+    22: { intro: "A course in organising company data for reporting: data warehouse concepts, SQL, dimensional modelling, ETL/ELT pipelines, OLAP, the Snowflake cloud data warehouse, an e-commerce use case, and BI dashboards with Power BI connected to Snowflake.",
       biz: "Managers make better decisions with one trusted, up-to-date view of the business. A well-built data warehouse saves hours of manual reporting and avoids conflicting numbers. The course follows a real build: understand the business, model the data, load it, check its quality and report." },
   };
 })(window);

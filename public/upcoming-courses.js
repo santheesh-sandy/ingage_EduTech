@@ -1,4 +1,4 @@
-/* ingage EduTech – courses announced as "Coming soon" (18–22): card pictures and their future S3 folders.
+/* ingage EduTech – courses announced as "Coming soon" (18–21; 22 Data Warehousing is now open, see dw-course.js): card pictures and their future S3 folders.
  *   18 Architectural Visualization · 19 Industrial Metaverse · 20 Game Development · 21 Graphic Design · 22 Data Warehousing
  * The course details (description, careers, fee, hours) are in index.html (var C, AIDEF, AISAL) like every other course.
  * Slides and videos will come from Amazon S3 later, in the folders below (same layout as the other courses:

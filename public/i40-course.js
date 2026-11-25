@@ -5,8 +5,7 @@
  * Files are on Amazon S3 (folder "Industry 4.0 & 5.0"):
  *   slides  <base>Slides/<file name>.pptx   (shown in the view-only slide viewer)
  *   videos  <base>Videos/<file name>.mp4    (played in the site's own player)
- * Note: "sub-Task 8 - Hive MQ to Node-red.mp4" was not on S3 when this was written (the lesson shows "not available yet"
- *       until it is uploaded under that name).
+ * Note: the Task 8 video is named "sub_Task 8 - Hive MQ to Node-red.mp4" on S3 (underscore, unlike the other "sub-Task" files).
  * Loaded before the main script in index.html, so the course list (var C) can use it.
  */
 (function (w) {
@@ -53,7 +52,7 @@
       ['Why convert raw sensor data into JSON?', ['To make it unreadable', 'To make it bigger', 'To delete it', 'So other systems can read it in a standard, labelled format'], 3],
       ['In MQTT, a broker such as HiveMQ…', ['Receives messages and passes them to the subscribers of each topic', 'Measures temperature', 'Stores video', 'Charges batteries'], 0]]],
     ['Node-RED and cloud data storage', 'Module_06_NodeRED_and_Cloud_Data_Storage', 3, [
-      ['sub-Task 8 - Hive MQ to Node-red', 'Task 8: HiveMQ to Node-RED'],
+      ['sub_Task 8 - Hive MQ to Node-red', 'Task 8: HiveMQ to Node-RED'],
       ['Task_9_Hive to Node red_Guage creation', 'Task 9: Node-RED gauge from HiveMQ data']], [
       ['Node-RED is…', ['A sensor', 'A flow-based tool for wiring devices, APIs and services together', 'A database engine', 'A PLC'], 1],
       ['In Node-RED, a dashboard gauge node…', ['Sends SMS', 'Stores files', 'Shows a live value, such as temperature, on a dial', 'Configures Wi-Fi'], 2],

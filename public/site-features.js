@@ -191,7 +191,7 @@
     21: { tech: ['Design principles, colour and typography','Adobe Photoshop','Adobe Illustrator','Canva for quick social media design','Brand identity and logos','Print and web file preparation'],
       why: "Every brand needs visuals: logos, social media posts, ads, packaging and brochures. Agencies, marketing teams and businesses hire designers who communicate clearly and deliver files that are ready to use.",
       apps: ['Logos and brand identity','Social media creatives and ads','Posters, brochures and packaging','Website and app visuals'] },
-    22: { tech: ['SQL','Dimensional modelling: star and snowflake schemas','ETL / ELT pipelines','Snowflake, BigQuery and Redshift','Power BI and Tableau','Data quality and governance'],
+    22: { tech: ['SQL','Dimensional modelling: star and snowflake schemas','ETL / ELT pipelines','Snowflake cloud data warehouse','Power BI','OLAP and OLTP','Roles and user access'],
       why: "Companies collect data in many systems: sales, finance, apps and websites. A data warehouse brings it together so managers get one trusted view. Data engineers and BI developers who can build that are in high demand.",
       apps: ['Company-wide sales and finance reporting','Customer 360 views for banks and retailers','Cloud data platforms','Executive BI dashboards'] },
   };

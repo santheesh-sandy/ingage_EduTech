@@ -170,7 +170,7 @@
     19: ['XR developer for industry trained in digital twins, VR training, AR maintenance guides and production simulation with live machine data.','Unity, XR (VR / AR), Digital twins, 3D modelling, Industrial data, Simulation, C#'],
     20: ['Game developer trained in game design, Unity and C#, 3D characters and animation, physics, UI and publishing for PC and mobile.','Unity, C#, Game design, Level design, 3D assets, Animation, Physics, UI, Publishing'],
     21: ['Graphic designer trained in design principles, typography and colour, Photoshop, Illustrator and Canva, brand identity, social media and print design.','Adobe Photoshop, Adobe Illustrator, Canva, Typography, Colour theory, Logo design, Brand identity, Social media design, Print design'],
-    22: ['Data engineer trained in SQL, dimensional modelling, ETL/ELT pipelines, cloud data warehouses and BI dashboards.','SQL, Data modelling (star / snowflake), ETL / ELT, Snowflake, BigQuery, Redshift, Power BI, Tableau, Data quality'],
+    22: ['Data engineer trained in SQL, dimensional modelling, ETL/ELT pipelines, cloud data warehouses and BI dashboards.','SQL, Data modelling (star / snowflake), ETL / ELT, Snowflake, Power BI, OLAP, Stored procedures, Roles and access'],
   };
 
   var CAP_Q = ['Walk us through your capstone project.', 'Problem → design → what you built → how you tested it → what you would improve.'];
@@ -300,6 +300,16 @@
       ['How do you measure a social media campaign?', 'Reach, engagement rate, clicks, leads and sales against the goal; use UTM links and Analytics.'],
       ['What is a good email open rate and how do you improve it?', 'Varies by industry (often 20-30%); improve with clean lists, segmentation, clear subject lines and good timing.'],
       ['A client’s website traffic suddenly dropped. What do you check?', 'Search Console (indexing, penalties), Analytics tracking, site changes, algorithm updates, server errors.'],
+      CAP_Q],
+    22: [
+      ['What is the difference between a data warehouse, a data lake and a data mart?', 'Warehouse: cleaned, integrated data for reporting; lake: raw data of any format; mart: a subject- or department-sized warehouse.'],
+      ['OLTP versus OLAP?', 'OLTP runs many small transactions (orders, payments); OLAP analyses large historical data for reports and trends.'],
+      ['Explain a star schema with an example.', 'A sales fact table (quantity, amount) linked to date, customer, product and store dimensions.'],
+      ['ETL or ELT – when would you use each?', 'ETL transforms before loading (older or on-premise tools); ELT loads raw data and transforms inside a cloud warehouse like Snowflake.'],
+      ['How does Snowflake separate storage and compute?', 'Data sits in central storage; virtual warehouses are compute clusters you start, resize or pause independently.'],
+      ['Write SQL to find duplicate records.', 'GROUP BY the key columns with HAVING COUNT(*) > 1, or ROW_NUMBER() over a partition and keep row 1.'],
+      ['How do you connect Power BI to Snowflake?', 'Snowflake connector with the account URL and warehouse; choose Import or DirectQuery, model relationships, write DAX measures.'],
+      ['How do you control who can see warehouse data?', 'Roles with GRANTs on databases, schemas and tables, following least privilege; users get roles, not direct rights.'],
       CAP_Q],
   };
 

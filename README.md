@@ -95,8 +95,10 @@ Industry 4.0 & 5.0: 10 modules, 26 decks, task videos 1-10 in the S3 folder "Ind
 are the same files as the Internet of Things course; a lesson can carry an `alt` link, and the player falls back to that copy
 while a video is not yet in the course's own folder. `public/dm-course.js` (course 17, Digital Marketing, 80 hours:
 23 modules, 47 decks, 52 Tamil videos; videos 9-25 are named "9.mp4" … "25.mp4"; modules 21-23 hold the practical videos).
-Coming soon (no lessons yet): courses 18-22, Architectural Visualization, Industrial Metaverse, Game Development, Graphic Design
-and Data Warehousing. Their pictures and future S3 folders are in `public/upcoming-courses.js`; when the slides and videos are
+`public/dw-course.js` (course 22, Data Warehousing: 10 modules, 25 decks, 14 videos; S3 videos 8 and 13 are copies of 3 and 6
+and are used only as their backup `alt` links; the picture is `UPC_IMG[22]`).
+Coming soon (no lessons yet): courses 18-21, Architectural Visualization, Industrial Metaverse, Game Development and Graphic
+Design. Their pictures and future S3 folders are in `public/upcoming-courses.js`; when the slides and videos are
 uploaded, add a curriculum file for the course and remove `soon:1` from its entry in `index.html`.
 Course card details (careers, pay, industries) are in `index.html` (`C`, `AIDEF`, `AISAL`), page sections in `site-features.js`
 (`COURSE_INFO`), career roles in `role-skills.js`, and chatbot keywords for each course in `index.html` (`KW`, `AIINT`).

@@ -1,12 +1,13 @@
-// Coming-soon courses 18–22 (Architectural Visualization, Industrial Metaverse, Game Development, Graphic Design,
-// Data Warehousing): pictures, course pages, careers, jobs, chatbot; no enrolment until slides and videos are on S3.
+// Coming-soon courses 18–21 (Architectural Visualization, Industrial Metaverse, Game Development, Graphic Design):
+// pictures, course pages, careers, jobs, chatbot; no enrolment until slides and videos are on S3.
+// (Course 22, Data Warehousing, was announced with them and is now open: tests/dw-course.test.mjs.)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadSite, sleep } from './helpers.mjs';
 
-const NEW = { 18: 'Architectural Visualization', 19: 'Industrial Metaverse', 20: 'Game Development', 21: 'Graphic Design', 22: 'Data Warehousing' };
+const NEW = { 18: 'Architectural Visualization', 19: 'Industrial Metaverse', 20: 'Game Development', 21: 'Graphic Design' };
 
-test('the five announced courses are listed as coming soon, after the open courses, each with a picture and course details', async () => {
+test('the four announced courses are listed as coming soon, after the open courses, each with a picture and course details', async () => {
   const s = await loadSite({ url: 'https://site.test/#courses' });
   await sleep(60);
   const V = s.w.cxVis();
@@ -30,19 +31,19 @@ test('the five announced courses are listed as coming soon, after the open cours
 
 test('a coming-soon course page shows its overview and careers but no enrolment', async () => {
   const s = await loadSite();
-  s.w.show(22); await sleep(60);
+  s.w.show(21); await sleep(60);
   const cv = s.w.$('cv');
   assert.match(cv.querySelector('#cx-overview .cx-biz').textContent, /How it is used in business/);
-  assert.match(cv.querySelector('#cx-careers').textContent, /Junior Data Engineer.*LPA/);
+  assert.match(cv.querySelector('#cx-careers').textContent, /Junior Graphic Designer.*LPA/);
   assert.match(cv.textContent, /Coming soon/i);
   assert.deepEqual(s.errors, []);
 });
 
-test('the chatbot points game, design, archviz, metaverse and data warehouse interests to the new courses', async () => {
+test('the chatbot points game, design, archviz and metaverse interests to the new courses', async () => {
   const s = await loadSite({ chatApi: '' });
   s.open(); await sleep(30);
   for (const [q, want] of [['Tell me about the graphic design course', /Graphic Design/], ['Tell me about the game development course', /Game Development/],
-    ['Tell me about the data warehousing course', /Data Warehousing/], ['Tell me about the industrial metaverse course', /Industrial Metaverse/],
+    ['Tell me about the industrial metaverse course', /Industrial Metaverse/],
     ['Tell me about the architectural visualization course', /Architectural Visualization/]]) {
     await s.ask(q);
     assert.match(s.lastText(), want, q);
