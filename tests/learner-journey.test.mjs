@@ -161,6 +161,8 @@ async function failTest(opts) {
   const set = s.w.lqSet(q.id);
   set.forEach((x, k) => { const pick = k == 0 ? x[2] : (x[2] + 1) % x[1].length; s.w.document.querySelector(`input[name=lq${k}][value="${pick}"]`).checked = true; });
   s.w.lqSubmit(q.id); await sleep(900);
+  // under a full parallel test run the reply can take longer: wait for it instead of a fixed time
+  for (let t = 0; t < 50 && s.last() && /^Explain the \d+ MCQ questions/.test(s.last().textContent.trim()); t++) await sleep(100);
   return { s, set };
 }
 

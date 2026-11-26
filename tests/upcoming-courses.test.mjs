@@ -5,9 +5,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadSite, sleep } from './helpers.mjs';
 
-const NEW = { 18: 'Architectural Visualization', 19: 'Industrial Metaverse', 20: 'Game Development', 21: 'Graphic Design' };
+const NEW = { 18: 'Architectural Visualization', 19: 'Industrial Metaverse', 20: 'Game Development', 21: 'Graphic Design',
+  23: 'Embedded System Design, C & Micro Controller Programming', 24: 'Software Testing & Automation', 25: 'UI/UX Design' };
 
-test('the four announced courses are listed as coming soon, after the open courses, each with a picture and course details', async () => {
+test('the announced courses are listed as coming soon, after the open courses, each with a picture and course details', async () => {
   const s = await loadSite({ url: 'https://site.test/#courses' });
   await sleep(60);
   const V = s.w.cxVis();
@@ -44,8 +45,24 @@ test('the chatbot points game, design, archviz and metaverse interests to the ne
   s.open(); await sleep(30);
   for (const [q, want] of [['Tell me about the graphic design course', /Graphic Design/], ['Tell me about the game development course', /Game Development/],
     ['Tell me about the industrial metaverse course', /Industrial Metaverse/],
-    ['Tell me about the architectural visualization course', /Architectural Visualization/]]) {
+    ['Tell me about the architectural visualization course', /Architectural Visualization/],
+    ['Tell me about the embedded systems course', /Embedded System Design/], ['I want to learn microcontroller programming in C', /Embedded System Design/],
+    ['Tell me about the software testing course', /Software Testing/], ['Do you teach Selenium test automation?', /Software Testing/],
+    ['Tell me about the UI/UX design course', /UI\/UX Design/], ['I want to learn Figma', /UI\/UX Design/]]) {
     await s.ask(q);
     assert.match(s.lastText(), want, q);
   }
+});
+
+test('the three newest courses appear in the background table and their career roles say the course is not open yet', async () => {
+  const s = await loadSite();
+  for (const [i, role] of [[23, 'Firmware Engineer'], [24, 'Automation Test Engineer'], [25, 'UX Designer']]) {
+    const r = s.w.rolesFor('Can I become a ' + role + '?', [i]).find((x) => x.role == role);
+    assert.ok(r && r.notOpen, role + ' role, not open yet');
+    assert.ok(s.w.AISAL[i].length >= 3 && s.w.AIDEF[i].jr.length >= 3, NEW[i] + ' salaries and roles');
+    assert.ok(s.w.CJOBS[i] && s.w.CPATH[i] && s.w.RSD[i], NEW[i] + ' careers content');
+  }
+  s.w.show(24); await sleep(60);
+  assert.match(s.w.$('cv').querySelector('#cx-careers').textContent, /Automation Test Engineer.*LPA/);
+  assert.deepEqual(s.errors, []);
 });

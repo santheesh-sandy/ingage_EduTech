@@ -106,6 +106,9 @@
     20: [['Game Development Intern','Internship · 3 months · Stipend','Build gameplay features and levels in Unity with a mentor.'],['Junior Game Developer','Full-time · Bengaluru / Hyderabad / Remote','Program gameplay, UI and systems in Unity with C#.']],
     21: [['Graphic Design Intern','Internship · 3 months · Stipend','Design social media posts, banners and print material for clients.'],['Junior Graphic Designer','Full-time · Chennai / Hybrid','Create logos, ads, social media creatives and brochures.']],
     22: [['Data Engineering Intern','Internship · 3 months · Stipend','Write SQL and help build ETL pipelines and reports.'],['Junior Data Engineer','Full-time · Chennai / Bengaluru','Build ETL pipelines and data models in a cloud data warehouse.']],
+    23: [['Embedded Systems Intern','Internship · 3 months · Stipend','Write and test embedded C code for microcontroller boards.'],['Embedded Software Trainee','Full-time · Chennai / Bengaluru','Develop and debug firmware for electronic products.']],
+    24: [['QA Testing Intern','Internship · 3 months · Stipend','Write test cases and report bugs on web and mobile apps.'],['Automation Test Engineer','Full-time · Chennai / Hybrid','Build and run Selenium and API test suites.']],
+    25: [['UI/UX Design Intern','Internship · 3 months · Stipend','Create wireframes and Figma screens for client apps.'],['Junior UI Designer','Full-time · Chennai / Hybrid','Design app and website screens and prototypes in Figma.']],
   };
 
   var CPATH = {
@@ -131,6 +134,9 @@
     20: [['Intern','Junior Game Developer','Game Developer','Senior / Lead Developer','Technical Director'],'Advanced C#, shaders, multiplayer and performance optimisation.'],
     21: [['Intern','Junior Graphic Designer','Graphic Designer','Senior Designer / Art Director','Creative Director'],'UI/UX design, motion graphics and a strong portfolio of brand work.'],
     22: [['Intern','Junior Data Engineer / BI Developer','Data Engineer','Senior Data Engineer','Data Architect'],'Python for data engineering, Spark, Airflow and cloud certifications.'],
+    23: [['Intern','Embedded Software Trainee','Embedded / Firmware Engineer','Senior Embedded Engineer','Embedded Architect'],'RTOS, embedded Linux, ARM Cortex-M and automotive standards (AUTOSAR, MISRA C).'],
+    24: [['Intern','QA Tester','Automation Test Engineer','Senior SDET','QA Lead / Test Manager'],'Java or Python for automation, performance testing (JMeter), mobile testing (Appium) and ISTQB certification.'],
+    25: [['Intern','Junior UI Designer','UI/UX Designer','Senior Product Designer','Design Lead'],'Interaction design, front-end basics (HTML/CSS), accessibility and a strong case-study portfolio.'],
   };
 
   var RSD = {
@@ -171,6 +177,9 @@
     20: ['Game developer trained in game design, Unity and C#, 3D characters and animation, physics, UI and publishing for PC and mobile.','Unity, C#, Game design, Level design, 3D assets, Animation, Physics, UI, Publishing'],
     21: ['Graphic designer trained in design principles, typography and colour, Photoshop, Illustrator and Canva, brand identity, social media and print design.','Adobe Photoshop, Adobe Illustrator, Canva, Typography, Colour theory, Logo design, Brand identity, Social media design, Print design'],
     22: ['Data engineer trained in SQL, dimensional modelling, ETL/ELT pipelines, cloud data warehouses and BI dashboards.','SQL, Data modelling (star / snowflake), ETL / ELT, Snowflake, Power BI, OLAP, Stored procedures, Roles and access'],
+    23: ['Embedded engineer trained in embedded C, microcontroller programming, GPIO, timers, interrupts, ADC and serial protocols, with hands-on hardware projects.','Embedded C, Microcontrollers, GPIO, Timers and interrupts, PWM, ADC, UART / I2C / SPI, Debugging, Datasheet reading'],
+    24: ['Software tester trained in manual and automated testing: test cases, bug reporting, Selenium, API testing with Postman and CI.','Manual testing, Test cases, Bug reporting, Selenium WebDriver, API testing, Postman, Regression testing, JIRA, CI'],
+    25: ['UI/UX designer trained in user research, wireframing, Figma, prototyping, design systems and usability testing.','Figma, User research, Personas, Wireframing, Prototyping, Design systems, Usability testing, Typography, Colour'],
   };
 
   var CAP_Q = ['Walk us through your capstone project.', 'Problem → design → what you built → how you tested it → what you would improve.'];

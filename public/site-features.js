@@ -194,6 +194,15 @@
     22: { tech: ['SQL','Dimensional modelling: star and snowflake schemas','ETL / ELT pipelines','Snowflake cloud data warehouse','Power BI','OLAP and OLTP','Roles and user access'],
       why: "Companies collect data in many systems: sales, finance, apps and websites. A data warehouse brings it together so managers get one trusted view. Data engineers and BI developers who can build that are in high demand.",
       apps: ['Company-wide sales and finance reporting','Customer 360 views for banks and retailers','Cloud data platforms','Executive BI dashboards'] },
+    23: { tech: ['Embedded C programming','Microcontroller architecture','GPIO, timers, interrupts and PWM','ADC and sensors','UART, I2C and SPI','Simulation and debugging tools'],
+      why: "Almost every device has a microcontroller inside: cars, appliances, medical devices, wearables and factory machines. Companies need engineers who can write reliable firmware in C and make hardware work.",
+      apps: ['Automotive electronics','Home appliances and consumer devices','Medical and wearable devices','Industrial controllers and IoT products'] },
+    24: { tech: ['Software testing life cycle','Test cases and bug reports','Manual functional and regression testing','Selenium WebDriver','API testing with Postman','CI pipelines for automated tests'],
+      why: "Every app must work before it reaches users. Testing teams catch bugs early, save money and protect a company's reputation, so QA and automation testers are hired across IT services and product companies.",
+      apps: ['Web and mobile app releases','Banking and payment systems','E-commerce checkout flows','Automated regression suites in CI'] },
+    25: { tech: ['UX principles and design thinking','User research and personas','Wireframes and information architecture','Figma','Prototyping and design systems','Usability testing'],
+      why: "People choose apps and websites that are easy to use. Companies hire UI and UX designers to turn ideas into clear, attractive screens that users understand quickly, which drives sign-ups and sales.",
+      apps: ['Mobile app design','Websites and landing pages','Dashboards and SaaS products','Design systems for product teams'] },
   };
   w.COURSE_INFO = COURSE_INFO;
   var PLACEMENT = {

@@ -256,7 +256,7 @@ test('courses page: an enrolled course says "Continue learning"', async () => {
   const prices = [...s.w.document.querySelectorAll('#courses .price')].map(text);
   assert.ok(prices.includes('Continue learning →'), prices.join('|'));
   assert.equal(prices.filter((p) => /Coming soon/.test(p)).length, s.w.cxVis().filter((c) => c.soon).length, 'one "Coming soon" per course that is not open');
-  assert.deepEqual([...s.w.cxVis().filter((c) => c.soon).map((c) => c.i)], [3, 4, 18, 19, 20, 21], 'coming soon: Terrain LiDAR, AR/VR and four announced courses (Data Warehousing is open)');
+  assert.deepEqual([...s.w.cxVis().filter((c) => c.soon).map((c) => c.i)], [3, 4, 18, 19, 20, 21, 23, 24, 25], 'coming soon: Terrain LiDAR, AR/VR and the announced courses (Data Warehousing is open)');
 });
 
 test('course cards: Enrolled / In progress / Completed badge sits next to the department pill on every card', async () => {

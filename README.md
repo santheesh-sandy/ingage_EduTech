@@ -98,7 +98,8 @@ while a video is not yet in the course's own folder. `public/dm-course.js` (cour
 `public/dw-course.js` (course 22, Data Warehousing: 10 modules, 25 decks, 14 videos; S3 videos 8 and 13 are copies of 3 and 6
 and are used only as their backup `alt` links; the picture is `UPC_IMG[22]`).
 Coming soon (no lessons yet): courses 18-21, Architectural Visualization, Industrial Metaverse, Game Development and Graphic
-Design. Their pictures and future S3 folders are in `public/upcoming-courses.js`; when the slides and videos are
+Design, and courses 23-25, Embedded System Design, C & Micro Controller Programming, Software Testing & Automation and
+UI/UX Design (their S3 folder names are a guess until the files are uploaded). Their pictures and future S3 folders are in `public/upcoming-courses.js`; when the slides and videos are
 uploaded, add a curriculum file for the course and remove `soon:1` from its entry in `index.html`.
 Course card details (careers, pay, industries) are in `index.html` (`C`, `AIDEF`, `AISAL`), page sections in `site-features.js`
 (`COURSE_INFO`), career roles in `role-skills.js`, and chatbot keywords for each course in `index.html` (`KW`, `AIINT`).
